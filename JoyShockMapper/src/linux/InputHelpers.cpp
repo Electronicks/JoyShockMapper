@@ -257,9 +257,9 @@ private:
 		case VK_ESCAPE:
 			return KEY_ESC;
 		case VK_PRIOR:
-			return KEY_PREVIOUS;
+			return KEY_PAGEUP;
 		case VK_NEXT:
-			return KEY_NEXT;
+			return KEY_PAGEDOWN;
 		case VK_HOME:
 			return KEY_HOME;
 		case VK_END:
@@ -283,7 +283,15 @@ private:
 		case V_WHEEL_UP:
 			return static_cast<decltype(KEY_0)>(V_WHEEL_UP);
 		case VK_BACK:
-			return KEY_BACK;
+			return KEY_BACKSPACE;
+    case VK_LWIN:
+      return KEY_LEFTMETA;
+    case VK_RWIN:
+      return KEY_RIGHTMETA;
+    case VK_APPS:
+      return KEY_COMPOSE;
+    case VK_SNAPSHOT:
+      return KEY_SYSRQ;
 			//		case NO_HOLD_MAPPED: return NO_HOLD_MAPPED;
 			//		case CALIBRATE: return CALIBRATE;
 			//		case GYRO_INV_X: return GYRO_INV_X;

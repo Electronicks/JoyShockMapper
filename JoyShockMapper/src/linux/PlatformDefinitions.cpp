@@ -338,6 +338,22 @@ WORD nameToKey(in_string name)
 	{
 		return VK_BACK;
 	}
+	if (name.compare("LWINDOWS") == 0)
+	{
+		return VK_LWIN;
+	}
+	if (name.compare("RWINDOWS") == 0)
+	{
+		return VK_RWIN;
+	}
+	if (name.compare("CONTEXT") == 0)
+	{
+		return VK_APPS;
+	}
+	if (name.compare("SCREENSHOT") == 0)
+	{
+		return VK_SNAPSHOT;
+	}
 	if (name.compare("NONE") == 0)
 	{
 		return NO_HOLD_MAPPED;
