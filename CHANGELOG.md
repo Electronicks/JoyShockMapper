@@ -3,6 +3,78 @@
 Most recent updates will appear first.
 This is a summary of new features and bugfixes. Read the README to learn how to use the features mentioned here.
 
+## Known issues
+* SDL always merges joycons behind the scene into a single controller. JSM is not able to split them. Use legacy-JSL version to use this feature.
+
+## 3.5.3
+
+### Features
+* Update SDL2 to latest 2.28.5
+
+### Bugfixes
+* Fixed Instant Press not applying properly
+* Fixed a deadlock with releasing a virtual controller
+
+## 3.5.2
+
+### Bugfixes
+* Fix toggle (again (again))
+* Exempt ADAPTIVE_TRIGGER and RUMBLE from RESET_MAPPINGS
+* Fix MOUSE_RING location bug
+* Fix armor x pro virtual touchpad button mapping
+
+## 3.5.1
+
+Nick fixes everything he broke with his "improvements"
+
+### Bugfixes
+* Restore digital binding of virtual gamepad trigggers X_LT, X_RT, PS_L2 AND PS_R2.
+* Fix turbo binding of virtual controller buttons. Use Toggle as well for 50-50 press time instead of 40ms.
+* Fix Dualsense Edge new button bindings (left buttons were inverted: LSL and RSR are grips)
+* Add VIRTUAL_CONTROLLER and HIDE_MINIMIZED as settings exempted from resetting on RESET_BINDINGS
+* Restore scroll stick mode
+* Fix Ds4 virtual controller connect with UP stuck
+* Fix Ds4 virtual controller touch adding a second ghost touch at 0,0
+* Fix Ds4 virtual controller HOME and CAPTURE buttons
+* Robustness fix at cleanup
+* Fix Armor X Pro PS mode's M2 button
+
+## 3.5.0
+
+Nick updates C++ standard to C++20, Add Setting Manager, Create Stick and Autoload objects, Update ViGEm, SDL2 and JSL dependencies to latest,
+which includes Sony Edge support for both SDL and JSL versions. Perform proper polymorphism of virtual gamepads.
+
+### Features
+* New HYBRID_AIM stick mode. This is the first feature developped by a community member : somebelse-Schmortii. It combines AIM and MOUSE_AREA. See readme for a ton of options and description
+* New virtual DS4 forwarding options: GYRO_OUTPUT=PS_MOTION, TOUCHPAD_MODE=PS_TOUCHPAD
+
+### Bugfixes
+* Set flick threshold at 100% (so that it is precisely controllerd by the outer deadzone setting)
+* Virtual buttons now work properly with event and action modifiers (toggle, hold, turbo, etc...)
+* Fix joycons in SDL2
+* Modeshift-ing out of a flick will lock the stick mode in FLICK_ONLY until the flick is completed
+
+
+## 3.4.0
+
+Nicolas updated SDL2 version to the latest release 2.0.20 and fixed some bugs
+NON BACKWARD COMPATIBLE CHANGE: Digital trigger bindings cannot be used at the same time as a virtual controller analog output, but the chord stack is updated to make use of chords and gyro button.
+Jibb has made some improvements to vehicle steering, including stick modes for converting an angle on the stick to a single-axis offset on a virtual stick, a large rotation of the stick to a single-axis offset on a virtual stick, and a way to map MOTION_STICK to a single steering axis.
+
+### Features
+* Any STICK_MODE can now be set to LEFT_ANGLE_TO_X, LEFT_ANGLE_TO_Y, RIGHT_ANGLE_TO_X, or RIGHT_ANGLE_TO_Y to convert the angle of the stick to a virtual stick offset in just that axis. Requires a virtual controller to be set. This can be useful for improved steering precision in games that only use one axis. For example, setting LEFT_STICK_MODE to LEFT_ANGLE_TO_X will let you point the stick forward to get out of the inner deadzone without actually steering left or right, and then make small adjustments left or right for gentle steering. Stick magnitude is still taken into account, so at any time you can choose to just keep the stick in the X axis and it'll behave the same as traditional single-axis stick steering.
+* Any STICK_MODE can now be set to LEFT_WIND_X or RIGHT_WIND_X, letting you wind that stick (rotate it flick-stick-style) to move that virtual stick across a single axis. This can be used to map very large movements to small stick movements, which can be useful for playing driving simulators. Releasing the stick will let the virtual stick pull back to its neutral position.
+* MOTION_STICK_MODE can be set to LEFT_STEER_X or RIGHT_STEER_X to map leaning the controller left and right to the X axis on a virtual controller stick. For steering, this can work better than setting MOTION_STICK_MODE to a regular stick since it naturally handles holding your controller upright, flat, or anything in-between.
+
+### Bugfixes
+* Autoload could not get started again, after being stopped
+* A controller trigger key could not get pressed
+* The full pull binding never registered when using analog controller triggers
+* Fix hold time being applied on the first turbo hit
+* Fix to direction keys not working in some games.
+* Fix ViGEm rumbling not working
+
+
 ## 3.3.0
 
 Jibb added basic support for mapping gyro and flick stick to virtual controller sticks.

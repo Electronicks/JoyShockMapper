@@ -66,7 +66,7 @@ public:
 			Start();
 	}
 
-	~PollingThread()
+	virtual ~PollingThread()
 	{
 		if (_continue)
 		{
@@ -89,7 +89,8 @@ public:
 	{
 		if (_thread && !_continue) // thread is running but hasn't stopped yet
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds{ _sleepTimeMs });
+			_thread->join();
+			_thread.reset();
 		}
 		if (!_thread) // thread is clear
 		{

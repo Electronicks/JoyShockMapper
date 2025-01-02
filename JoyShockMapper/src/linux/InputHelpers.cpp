@@ -257,9 +257,9 @@ private:
 		case VK_ESCAPE:
 			return KEY_ESC;
 		case VK_PRIOR:
-			return KEY_PREVIOUS;
+			return KEY_PAGEUP;
 		case VK_NEXT:
-			return KEY_NEXT;
+			return KEY_PAGEDOWN;
 		case VK_HOME:
 			return KEY_HOME;
 		case VK_END:
@@ -283,7 +283,15 @@ private:
 		case V_WHEEL_UP:
 			return static_cast<decltype(KEY_0)>(V_WHEEL_UP);
 		case VK_BACK:
-			return KEY_BACK;
+			return KEY_BACKSPACE;
+    case VK_LWIN:
+      return KEY_LEFTMETA;
+    case VK_RWIN:
+      return KEY_RIGHTMETA;
+    case VK_APPS:
+      return KEY_COMPOSE;
+    case VK_SNAPSHOT:
+      return KEY_SYSRQ;
 			//		case NO_HOLD_MAPPED: return NO_HOLD_MAPPED;
 			//		case CALIBRATE: return CALIBRATE;
 			//		case GYRO_INV_X: return GYRO_INV_X;
@@ -560,7 +568,7 @@ void setMouseNorm(float x, float y)
 	mouse.mouse_move_absolute(std::roundf(65535.0f * x), std::roundf(65535.0f * y));
 }
 
-bool WriteToConsole(const std::string &command)
+bool WriteToConsole(in_string command)
 {
 	constexpr auto STDIN_FD{ 0 };
 
@@ -699,7 +707,7 @@ std::string GetCWD()
 }
 
 bool SetCWD(in_string newCWD) {
-    return chdir(newCWD.c_str()) != 0;
+    return chdir(newCWD.data()) != 0;
 }
 
 DWORD ShowOnlineHelp()

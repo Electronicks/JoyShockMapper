@@ -15,7 +15,7 @@
 using namespace std; // simplify all std calls
 
 // input string parameters should be const references.
-typedef const string &in_string;
+typedef string_view in_string;
 
 // Reused OS typedefs
 typedef unsigned short WORD;
@@ -79,6 +79,11 @@ constexpr WORD PS_HOME = 0xB8;
 constexpr WORD PS_PAD_CLICK = 0xB9;
 constexpr WORD PS_L2 = 0xD8;
 constexpr WORD PS_R2 = 0xD9;
+
+constexpr bool isControllerKey(WORD code)
+{
+	return (code >= X_UP && code <= X_START) || code == PS_HOME || code == PS_PAD_CLICK || code == X_LT || code == X_RT;
+}
 
 // All enums should have an INVALID field for proper use with templated << and >> operators
 
@@ -173,7 +178,8 @@ extern const map<ButtonID, string> buttonHelpMap;
 
 enum class SettingID
 {
-	INVALID = 0,    // Represents an error in user input
+	INVALID = -1,
+	ZERO = 0,    // Represents an error in user input
 	MIN_GYRO_SENS,  // Legacy but int value not used
 	MAX_GYRO_SENS,
 	MIN_GYRO_THRESHOLD,
@@ -195,8 +201,8 @@ enum class SettingID
 	RIGHT_STICK_AXIS,
 	MOTION_STICK_AXIS,
 	TOUCH_STICK_AXIS,
-	STICK_AXIS_X,      // Legacy command
-	STICK_AXIS_Y,      // Legacy command
+	STICK_AXIS_X, // Legacy command
+	STICK_AXIS_Y, // Legacy command
 	GYRO_AXIS_X,
 	GYRO_AXIS_Y,
 	RECONNECT_CONTROLLERS,
@@ -239,6 +245,8 @@ enum class SettingID
 	FLICK_SNAP_STRENGTH,
 	MOTION_DEADZONE_INNER,
 	MOTION_DEADZONE_OUTER,
+	ANGLE_TO_AXIS_DEADZONE_INNER,
+	ANGLE_TO_AXIS_DEADZONE_OUTER,
 	RIGHT_STICK_DEADZONE_INNER,
 	RIGHT_STICK_DEADZONE_OUTER,
 	LEAN_THRESHOLD,
@@ -281,8 +289,20 @@ enum class SettingID
 	RIGHT_STICK_UNPOWER,
 	LEFT_STICK_VIRTUAL_SCALE,
 	RIGHT_STICK_VIRTUAL_SCALE,
+	WIND_STICK_RANGE,
+	WIND_STICK_POWER,
+	UNWIND_RATE,
 	GYRO_OUTPUT,
 	FLICK_STICK_OUTPUT,
+	HIDE_MINIMIZED,
+	AUTO_CALIBRATE_GYRO,
+	JSM_DIRECTORY,
+	RETURN_DEADZONE_IS_ACTIVE,
+	EDGE_PUSH_IS_ACTIVE,
+	STICKLIKE_FACTOR,
+	MOUSELIKE_FACTOR,
+	RETURN_DEADZONE_ANGLE,
+	RETURN_DEADZONE_ANGLE_CUTOFF,
 };
 
 // constexpr are like #define but with respect to typeness
@@ -333,8 +353,18 @@ enum class StickMode
 	OUTER_RING,
 	INNER_RING,
 	SCROLL_WHEEL,
+	HYBRID_AIM,
+	// Following requires virtual controller (keep them contiguous)
 	LEFT_STICK,
 	RIGHT_STICK,
+	LEFT_ANGLE_TO_X,
+	LEFT_ANGLE_TO_Y,
+	RIGHT_ANGLE_TO_X,
+	RIGHT_ANGLE_TO_Y,
+	LEFT_STEER_X,
+	RIGHT_STEER_X,
+	LEFT_WIND_X,
+	RIGHT_WIND_X,
 	INVALID
 };
 enum class FlickSnapMode
@@ -406,6 +436,7 @@ enum class GyroOutput
 	MOUSE,
 	LEFT_STICK,
 	RIGHT_STICK,
+	PS_MOTION,
 	INVALID
 };
 
@@ -440,6 +471,7 @@ enum class TouchpadMode
 {
 	GRID_AND_STICK, // Grid and Stick
 	MOUSE,          // gestures to be added as part of this mode
+	PS_TOUCHPAD,
 	INVALID
 };
 
@@ -448,6 +480,10 @@ class PathString : public string // Should be wstring
 {
 public:
 	PathString() = default;
+	PathString(const string& path)
+	  : string(path)
+	{
+	}
 	PathString(in_string path)
 	  : string(path)
 	{
@@ -473,14 +509,14 @@ union Color
 using AxisSignPair = pair<AxisMode, AxisMode>;
 
 // Needs to be accessed publicly
-extern WORD nameToKey(const std::string &name);
+extern WORD nameToKey(in_string name);
 
 struct KeyCode
 {
 	static const KeyCode EMPTY;
 
-	WORD code;
-	string name;
+	WORD code = NO_HOLD_MAPPED;
+	string name = "None";
 
 	KeyCode();
 
@@ -520,13 +556,20 @@ struct FloatXY : public pair<float, float>
 	{
 		return second;
 	}
+
+	FloatXY &operator+=(const FloatXY& rhs)
+	{
+		first += rhs.first;
+		second += rhs.second;
+		return *this;
+	}
 };
 
 // Set of gyro control settings bundled in one structure
 struct GyroSettings
 {
 	bool always_off = false;
-	ButtonID button = ButtonID::NONE;
+	ButtonID button = ButtonID::NONE; // Ignore on button none means no GYRO_OFF button (or Always On);
 	GyroIgnoreMode ignore_mode = GyroIgnoreMode::BUTTON;
 };
 

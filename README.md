@@ -122,9 +122,8 @@ In order to build on Linux, the following dependencies must be met, with their r
 
 - Fedora: ```clang SDL2-devel libappindicator-gtk3-devel libevdev-devel gtk3-devel libusb-devel hidapi-devel```
 - Arch: ```clang sdl2 libappindicator-gtk3 libevdev gtk3 libusb hidapi```
-- Please provide an issue report or pull request to have additional library lists added.
-
-
+* Gentoo: ```media-libs/libsdl2 dev-libs/libayatana-appindicator dev-libs/libevdev x11-libs/gtk+ dev-libs/libusb dev-libs/hidapi``` The clang installed by default is sufficent to build the program. However you will need to rename the include from ```libappindicator``` to ```libayatana-appindicator``` in ```./JoyShockMapper/include/linux/StatusNotifierItem.h``` and ```./JoyShockMapper/src/linux/StatusNotifierItem.cpp```. You will also need to change line 7 in ```./cmake/LinuxConfig.cmake``` to ```pkg_search_module (appindicator REQUIRED IMPORTED_TARGET ayatana-appindicator3-0.1)```
+* Please provide an issue report or pull request to have additional library lists added.
 
 Due to a [bug](https://stackoverflow.com/questions/49707184/explicit-specialization-in-non-namespace-scope-does-not-compile-in-gcc) in GCC, the project in its current form will only build with Clang.
 
@@ -273,7 +272,7 @@ Those familiar with Steam Input can implement Action Layers and Action Sets usin
 
 ```
 # Load the driving control scheme.
-HOME = "GTA_driving.txt" # That file should bind HOME to loading the walking scheme file!
+HOME = "Autoload/GTA5/GTA_driving.txt" # That file should bind HOME to loading the walking scheme file!
 ```
 
 Take note that the command bound in this way cannot contain quotation marks, and thus cannot contain the binding of a command itself. In this case, you should put the command in a file and load that file.
@@ -528,7 +527,7 @@ MACHINE start[0 9] end[0 9] force1[0 7] force2[0 7] freq[Hz] period: Irregular p
 ```
 
 ### 3. Stick Configuration
-Each stick has 7 different operation modes:
+Each stick has 8 different operation modes when you're not using a virtual controller:
 
 ```
 AIM: traditional stick aiming
@@ -539,6 +538,7 @@ MOUSE_RING: stick angle sets the mouse position on a circle directly around the 
 MOUSE_AREA: stick position sets the cursor in a circular area around the neutral position
 NO_MOUSE: don't affect the mouse, use button mappings (default)
 SCROLL_WHEEL: enable left and right bindings by rotating the stick counter-clockwise or clockwise.
+HYBRID_AIM: adds together traditional behavior of a stick with a mouse-like behavior.
 ```
 
 The mode for the left and right stick are set like so:
@@ -584,7 +584,7 @@ Let's have a look at all the different operations modes.
 
 When using the ```AIM``` stick mode, there are a few important commands:
 
-* **STICK\_SENS** (default 360.0 degrees per second) - How fast does the stick move the camera when tilted fully? The default, when calibrated correctly, is 360 degrees per second. Assign a second value if you desire a different vertical sensitivity from the horizontal sensitivity.
+* **STICK\_SENS** (default 360.0) - How fast does the stick move the camera when tilted fully? The default, when calibrated correctly, is 360 degrees per second. Assign a second value if you desire a different vertical sensitivity from the horizontal sensitivity.
 * **STICK\_POWER** (default 1.0) - What is the shape of the curve used for converting stick input to camera turn velocity? 1.0 is a simple linear relationship (half-tilting the stick will turn at half the velocity given by STICK\_SENS), 0.5 for square root, 2.0 for quadratic, etc. Minimum value is 0.0, which means any input beyond STICK\_DEADZONE\_INNER will be treated as a full press as far as STICK\_SENS is concerned.
 * **LEFT\_STICK\_AXIS** and **RIGHT\_STICK\_AXIS** (default STANDARD) - This allows you to invert stick axes if you wish. Your options are STANDARD (default) or INVERTED (flip the axis). To assign a separate vertical value, provide a second parameter.
 * **STICK\_ACCELERATION\_RATE** (default 0.0 multiplier increase per second) - When the stick is pressed fully, this option allows you to increase the camera turning velocity over time. The unit for this setting is a multiplier for STICK\_SENS per second. For example, 2.0 with a STICK\_SENS of 100 will cause the camera turn rate to accelerate from 100 degrees per second to 300 degrees per second over 1 second.
@@ -612,13 +612,32 @@ The ```FLICK_ONLY``` and ```ROTATE_ONLY``` stick modes work the same as flick st
 
 You can also emulate flick stick with a virtual controller, but it's more limited. Set **FLICK\_STICK\_OUTPUT** to **RIGHT\_STICK** or **LEFT\_STICK** instead of its default value of **MOUSE**. When outputting flick stick to a virtual controller, FLICK_TIME and FLICK_TIME_EXPONENT won't do anything. Instead, the virtual stick will be tilted at its full strength in the desired direction for enough time to complete the flick. This will generally be much less precise than MOUSE mode, but it's still useful. Tune the size of a flick stick flick/rotation by setting **VIRTUAL\_STICK\_CALIBRATION**. Ideally, this should be set to the maximum horizontal turning speed of the in game camera in degrees per second.
 
-#### 3.3 Other mouse modes
+#### 3.3 HYBRID_AIM mode
+
+When using ```HYBRID_AIM``` stick mode, the output consists of the sum of the behavior of a traditional stick, i.e. stick position sets cursor speed, as well as the positional behavior, i.e. stick travelling sets cursor travelling. Additionally, there is an 'edge push' feature to preserve the motion speed when pushing the stick to the edge. Moving the stick quickly gives a large output that is dominated by the mouse-like component, whereas moving it slowly gives an output that in more influenced by the stick-like component.
+
+With this input method it is easier to do accurate small movements of the camera while being able to do faster turns than with a traditional stick method as the combined behavior results in a high dynamic range.
+
+This mode shares STICK\_SENS*, STICK\_POWER, (LEFT / RIGHT)\_STICK_AXIS, (LEFT\_ / RIGHT_)STICK_DEADZONE_DEADZONE_INNER and (LEFT_ / RIGHT_)STICK_DEADZONE_OUTER with ```AIM```. 
+
+It is recommended to keep STICK_DEADZONE_OUTER as small as possible for the best experience. STICK_DEADZONE_INNER matters less, as this mode is very responsive even with a large inner deadzone.
+
+The other settings of this mode are:
+
+* **STICK\_SENS** (default 360.0) - How fast the camera is moved by the position of the stick. Currently this is an arbitrary number and a calibration is not implemented for this. In the future this should represent degrees per second. 
+* **MOUSELIKE\_FACTOR** (default 90.0) - How fast the camera is moved by the movement of the stick. Like the above, no calibration implemented yet. In the future this should represent degrees per one full travel of the stick from center to full deflection.
+* **RETURN\_DEADZONE\_IS\_ACTIVE** (default ON) - There are two possibly quite different ways this input mode can function. When this setting is set to ON, the mode may feel more like a traditional stick, when its set to OFF, the mode may feel way more responsive but it is difficult to make the output hold still because of the behavior inherent to this input method.
+* **RETURN\_DEADZONE\_ANGLE** (default 45.0 degrees) - The angle to the center from the current stick position where the output is set to zero.
+* **RETURN\_DEADZONE\_CUTOFF\_ANGLE** (default 90.0 degrees) - The angle to the center where the return deadzone has no effect anymore. Between RETURN_DEADZONE_ANGLE and this, the output slowly returns to normal. 
+* **EDGE\_PUSH\_IS\_ACTIVE** (default ON) - Whether or not the mouse-like movement is to be continued when hitting the edge of the stick (entering the outer deadzone). If so, it functions similar to the stick-like component until it is reset either by entering the return deadzone or inner deadzone, but is at most the value at the smallest deflection since the push.
+
+#### 3.4 Other mouse modes
 
 When using the ```MOUSE_RING``` stick mode, tilting the stick will put the mouse cursor in a position offset from the centre of the screen by your stick position. This mode is primarily intended for twin-stick shooters. To do this, the application needs to know your screen resolution (SCREEN\_RESOLUTION\_X and SCREEN\_RESOLUTION\_Y) and how far you want the cursor to sit from the centre of the screen (MOUSE\_RING\_RADIUS). When this mode is in operation (i.e. the stick is not at rest), all other mouse movements are ignored.
 
 When using the ```MOUSE_AREA``` stick mode, the stick value directly sets the mouse position. So moving the stick rightward gradually all the way to the edge will move the cursor at the same speed for a number of pixel equal to the value of ```MOUSE_RING_RADIUS``` ; and moving the stick back to the middle will move the cursor back again to where it started. Contrary to the previous mode, this mode can operate in conjunction with other mouse inputs, such as gyro.
 
-#### 3.4 Digital modes
+#### 3.5 Digital modes
 
 When using stick mode ```NO_MOUSE```, JSM will use the stick's UP DOWN LEFT and RIGHT bindings in a cross gate layout. There is a small square deadzone to ignore very small stick moves.
 
@@ -634,7 +653,7 @@ LEFT_RING_MODE = INNER
 LRING = LALT # Walk
 ```
 
-#### 3.5 Motion Stick and lean bindings
+#### 3.6 Motion Stick and lean bindings
 Using the motion sensors, you can treat your whole controller as a stick. The "Motion Stick" can do everything that a regular stick can do:
 * **MOTION\_STICK\_MODE** (default NO\_MOUSE) - All the same options as LEFT\_STICK\_MODE and RIGHT\_STICK\_MODE.
 * **MOTION\_RING\_MODE** (default OUTER) - All the same options as LEFT\_RING\_MODE and RIGHT\_RING\_MODE.
@@ -797,6 +816,41 @@ LEFT_STICK_MODE = LEFT_STICK
 RIGHT_STICK_MODE = RIGHT_STICK
 ```
 
+While these map very simply from your real sticks to the virtual sticks, there are other new stick modes available for giving finer control over a single axis:
+```
+LEFT_ANGLE_TO_X
+LEFT_ANGLE_TO_Y
+RIGHT_ANGLE_TO_X
+RIGHT_ANGLE_TO_Y
+```
+
+These will take the stick's angle into account for inputs that are normally only in one axis. For example, steering a car: instead of just moving the left stick left and right for adjusting your steering, rotating it around the edge of the stick will give you more precision and finer control over how hard you're steering. Set up the relevant UNDEADZONEs and UNPOWER for best effect.
+
+These stick modes have inner and outer deadzones, set in degrees:
+```
+ANGLE_TO_AXIS_DEADZONE_INNER = 0
+ANGLE_TO_AXIS_DEADZONE_OUTER = 10
+```
+
+There's also:
+```
+LEFT_WIND_X
+RIGHT_WIND_X
+```
+
+These also use the angle of the stick to control the virtual stick in a single axis, but these are _relative_ instead of _absolute_, and can use a much wider range. This means pointing the stick in a direction doesn't really do anything, but rotating the stick does, letting you wind the stick left or right to adjust the stick position left or right. When you release the stick the virtual stick will quickly pull back to its neutral position. Here are the relevant options:
+* **WIND_STICK_RANGE** (default 900.0°) - This is the total range of winding motion available on the stick. It's from full-left to full-right, but the "neutral" position is in the middle. So the default of 900° means you can rotate the stick 450° to the left and 450° to the right.
+* **WIND_STICK_POWER** (default 1.0) - What is the shape of the curve used for converting the wound position to a stick offset? 1.0 is a simple linear relationship. Larger values will mean rotations are reduced when near the neutral position and increased towards the edge of the range. Smaller values will mean the opposite.
+* **UNWIND_RATE** (default 1800.0 degrees per second) - This is how quickly the wound stick position pulls back to its neutral position when the stick is released. If the stick is only partially engaged, the virtual stick position will unwind more slowly.
+
+For MOTION_STICK_MODE in particular, there are two new options:
+```
+LEFT_STEER_X
+RIGHT_STEER_X
+```
+
+These will map leaning the controller to the X axis of either the left or right stick. For steering a car, this works better than mapping MOTION_STICK to a stick. But like mapping it to a stick, UNPOWER and UNDEADZONE come into play. Make sure to set MOTION_DEADZONE_INNER and MOTION_DEADZONE_OUTER to suitable values -- they're both in degrees, with the max motion / lean angle being 180 degrees.
+
 * **New trigger mode available**
 ```
 # Using analog triggers
@@ -846,6 +900,31 @@ LEFT_STICK_MODE = LEFT_STICK
 RIGHT_STICK_MODE = RIGHT_STICK
 ```
 
+* **New GYRO_OUTPUT mode available**
+```
+GYRO_OUTPUT = PS_MOTION
+```
+
+* **New TOUCHPAD_MODE mode available**
+```
+TOUCHPAD_MODE = PS_TOUCHPAD
+```
+
+A ds4 can also use the more advanced angle-to-axis stick modes described in the xbox section:
+```
+LEFT_ANGLE_TO_X
+LEFT_ANGLE_TO_Y
+RIGHT_ANGLE_TO_X
+RIGHT_ANGLE_TO_Y
+LEFT_WIND_X
+RIGHT_WIND_X
+```
+As well as the MOTION_STICK-specific modes:
+```
+LEFT_STEER_X
+RIGHT_STEER_X
+```
+
 * **New trigger mode available**. JoyShockMapper will display the trigger mode as the xbox name : the trigger will still work properly.
 ```
 # Using analog triggers
@@ -853,7 +932,7 @@ ZL_MODE = PS_L2
 ZR_MODE = PS_R2
 ```
 
-Using both analog and digital trigger bindings at the same time leads to undefined behaviours. Use modeshift as defined in the next section to disable analog triggers while a digital trigger binding is active.
+If there is multiple sources of analog data (such as a trigger and a digital binding) the two sources will add up and clamp within the limit of the data. Soft and full pull chords will still be available for use and for the gyro button.
 
 #### 6.3 Virtual Controller Gyro
 While the virtual controller can't output gyro, JoyShockMapper can convert gyro input to stick output. For example:

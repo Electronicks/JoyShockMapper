@@ -98,6 +98,10 @@ extern const char *BASE_JSM_CONFIG_FOLDER();
 #define VK_MBUTTON 0x04
 #define VK_XBUTTON1 0x05
 #define VK_XBUTTON2 0x06
+#define VK_LWIN 0x5B // Left Windows Key
+#define VK_RWIN 0x5C // Right Windows Key
+#define VK_APPS 0x5D // Context Key
+#define VK_SNAPSHOT 0x2C // Printscreen Key
 #define VK_NONAME 0xFC
 
 #define U(string) string
