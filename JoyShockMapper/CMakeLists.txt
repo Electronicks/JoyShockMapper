@@ -1,4 +1,4 @@
-set (BINARY_NAME "JoyShockMapper")
+set (BINARY_NAME ${PROJECT_NAME})
 
 git_describe(GIT_TAG --tags --dirty=_d)
 
@@ -13,8 +13,6 @@ message(STATUS "JSM version is " ${JSM_VERSION})
 
 configure_file(include/JSMVersion.h.in include/JSMVersion.h)
 
-set (CMAKE_VS_JUST_MY_CODE_DEBUGGING 1)
-
 add_executable (
     ${BINARY_NAME}
     src/main.cpp
@@ -22,15 +20,12 @@ add_executable (
     src/CmdRegistry.cpp
     src/quatMaths.cpp
     src/ButtonHelp.cpp
-    src/DigitalButton.cpp
-    src/MotionImpl.cpp
-    src/Mapping.cpp
+ 	src/DigitalButton.cpp
+	src/MotionImpl.cpp
+	src/Mapping.cpp
     src/TriggerEffectGenerator.cpp
     src/AutoLoad.cpp
-	src/AutoConnect.cpp
-    src/SettingsManager.cpp
-    src/Stick.cpp
-    src/JoyShock.cpp
+	src/SettingsManager.cpp
     include/TriggerEffectGenerator.h
     include/InputHelpers.h
     include/PlatformDefinitions.h
@@ -99,9 +94,9 @@ if (WINDOWS)
     
     target_link_libraries (
         ${BINARY_NAME} PRIVATE
-        ViGEmClient
-    )
-    
+		ViGEmClient
+	)
+	
     target_include_directories (
         ${BINARY_NAME} PUBLIC
         "${ViGEmClient_SOURCE_DIR}/include"
@@ -116,23 +111,24 @@ if (WINDOWS)
                 "$<TARGET_FILE_DIR:${BINARY_NAME}>/$<TARGET_FILE_NAME:SDL3-shared>"
         )
     else()
-        add_custom_command(
-            TARGET ${BINARY_NAME}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-                "$<TARGET_FILE:JoyShockLibrary>"
-                "$<TARGET_FILE_DIR:${BINARY_NAME}>/$<TARGET_FILE_NAME:JoyShockLibrary>"
-        )
+		add_custom_command(
+			TARGET ${BINARY_NAME}
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy
+				"$<TARGET_FILE:JoyShockLibrary>"
+				"$<TARGET_FILE_DIR:${PROJECT_NAME}>/$<TARGET_FILE_NAME:JoyShockLibrary>"
+		)
     endif()
 	
     set_target_properties (
         ${BINARY_NAME} PROPERTIES
          WIN32_EXECUTABLE ON
+         VS_STARTUP_PROJECT "${BINARY_NAME}"
          VS_DEBUGGER_WORKING_DIRECTORY "$(ProjectDir)/$(Configuration)/"
-         VS_DEBUGGER_COMMAND_ARGUMENTS "$(SolutionDir)../dist"
+		 VS_DEBUGGER_COMMAND_ARGUMENTS "$(SolutionDir)../dist"
     )
 
-     add_definitions(/bigobj) # /experimental:module
+	 add_definitions(/bigobj)
 endif ()
 
 if (LINUX)
@@ -156,7 +152,7 @@ if (LINUX)
         src/linux/PlatformDefinitions.cpp
         src/linux/StatusNotifierItem.cpp    include/linux/StatusNotifierItem.h
         src/linux/Whitelister.cpp
-        src/linux/Gamepad.cpp
+		src/linux/Gamepad.cpp
     )
 endif ()
 
@@ -169,15 +165,11 @@ target_compile_definitions (
 target_include_directories (
     ${BINARY_NAME} PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${PROJECT_BINARY_DIR}/${BINARY_NAME}/include"
+    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}/include"
 )
 
 if(SDL OR NOT DEFINED SDL)
-
 	set(SDL_HIDAPI ON)
-    set(SDL_TEST_LIBRARY OFF)
-    set(SDL_SHARED ON)
-    set(SDL_TEST OFF)
 	CPMAddPackage (
 		NAME SDL3
         GITHUB_REPOSITORY libsdl-org/SDL
@@ -255,19 +247,19 @@ else()
 	CPMAddPackage (
 		NAME JoyShockLibrary
 		GITHUB_REPOSITORY JibbSmart/JoyShockLibrary
-		GIT_TAG eba751b6bddf5edc783790af35b663dec7495dcc
+		GIT_TAG 0
 	)
 
-    target_link_libraries (
-        ${BINARY_NAME} PRIVATE
-        Platform::Dependencies
-        JoyShockLibrary
-    )
+	target_link_libraries (
+		${BINARY_NAME} PRIVATE
+		Platform::Dependencies
+		JoyShockLibrary
+	)
 
-    install (
-        TARGETS ${BINARY_NAME} JoyShockLibrary
-        RUNTIME DESTINATION ${PACKAGE_DIR}
-    )
+	install (
+		TARGETS ${BINARY_NAME} JoyShockLibrary
+		RUNTIME DESTINATION ${PACKAGE_DIR}
+	)
 endif()
 
 
@@ -301,7 +293,7 @@ target_link_libraries (
 CPMAddPackage (
     NAME GamepadMotionHelpers
     GITHUB_REPOSITORY JibbSmart/GamepadMotionHelpers
-    GIT_TAG 39b578aacf34c3a1c584d8f7f194adc776f88055
+    GIT_TAG main
 )
 
 target_link_libraries (
@@ -309,3 +301,38 @@ target_link_libraries (
     Platform::Dependencies
     GamepadMotionHelpers
 )
+
+# Dear ImGUI
+CPMAddPackage (
+    NAME imgui
+    GITHUB_REPOSITORY ocornut/imgui
+    GIT_TAG docking
+)
+
+add_library(imgui STATIC
+  ${imgui_SOURCE_DIR}/imgui.cpp ${imgui_SOURCE_DIR}/imgui.h
+  ${imgui_SOURCE_DIR}/imconfig.h ${imgui_SOURCE_DIR}/imgui_demo.cpp
+  ${imgui_SOURCE_DIR}/imgui_draw.cpp ${imgui_SOURCE_DIR}/imgui_internal.h
+  ${imgui_SOURCE_DIR}/imgui_tables.cpp ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+  ${imgui_SOURCE_DIR}/imstb_rectpack.h ${imgui_SOURCE_DIR}/imstb_textedit.h
+  ${imgui_SOURCE_DIR}/imstb_truetype.h
+  ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.h ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
+  ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer.h ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer.cpp)
+
+target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+target_link_libraries(imgui PUBLIC SDL2::SDL2)
+
+target_link_libraries(${BINARY_NAME} PUBLIC imgui)
+
+target_include_directories(${BINARY_NAME} PUBLIC ${PROJECT_BINARY_DIR}/_deps/imgui-src
+                                                 ${PROJECT_BINARY_DIR}/_deps/imgui-src/backends)
+
+add_custom_command(
+	TARGET ${BINARY_NAME}
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy
+	"${PROJECT_SOURCE_DIR}/dist/ds4.bmp"
+	"$<TARGET_FILE_DIR:${PROJECT_NAME}>/ds4.bmp"
+)
+
+# FetchContent_MakeAvailable(imgui)
