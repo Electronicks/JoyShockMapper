@@ -3,6 +3,17 @@
 Most recent updates will appear first.
 This is a summary of new features and bugfixes. Read the README to learn how to use the features mentioned here.
 
+## 3.6.1
+
+Fixing all the stuff I broke.
+
+### Bugfixes
+
+* Fix crash on Simultaneous press
+* Fix crash on command action
+* Improve handling of overlaping sim press and diag press
+* Fix SCROLL_WHEEL stick mode
+
 ## 3.6.0
 
 New features, bugfixes and all around improvements!

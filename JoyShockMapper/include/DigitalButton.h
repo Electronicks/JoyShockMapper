@@ -26,7 +26,6 @@ enum class BtnState
 	SimRelease,
 	DiagPressMaster,
 	DiagPressSlave,
-	DiagRelease,
 	DblPressStart,
 	DblPressNoPress,
 	DblPressNoPressTap,
