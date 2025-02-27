@@ -269,6 +269,10 @@ public:
 
 			lock_guard guard(controller_lock);
 			SDL_UpdateGamepads();
+			if (_controllerMap.empty())
+			{
+				_gui.draw(nullptr);
+			}
 			for (auto iter = _controllerMap.begin(); iter != _controllerMap.end(); ++iter)
 			{
 				if (g_callback)
