@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "*.j2": "ansible-jinja",
+        "cctype": "cpp",
+        "memory": "cpp",
+        "regex": "cpp",
+        "string": "cpp",
+        "fstream": "cpp",
+        "algorithm": "cpp",
+        "cstring": "cpp",
+        "thread": "cpp",
+        "iostream": "cpp",
+        "cstdlib": "cpp"
+    }
+}

@@ -11,6 +11,12 @@
 #include <atomic>
 #include <thread>
 
+// Setup the input pipe for console input 
+#ifndef _WIN32
+extern int input_pipe_fd[2];
+#endif
+
+
 // get the user's mouse sensitivity multiplier from the user. In Windows it's an int, but who cares? it's well within range for float to represent it exactly
 // also, if this is ported to other platforms, we might want non-integer sensitivities
 float getMouseSpeed();
@@ -39,6 +45,7 @@ BOOL WINAPI ConsoleCtrlHandler(DWORD dwCtrlType);
 
 // just setting up the console with standard stuff
 void initConsole();
+void initConsole(std::function<void()>);
 
 tuple<string, string> GetActiveWindowName();
 

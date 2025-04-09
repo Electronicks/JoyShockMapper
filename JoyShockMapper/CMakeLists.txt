@@ -174,7 +174,8 @@ if(SDL OR NOT DEFINED SDL)
 	CPMAddPackage (
 		NAME SDL2
         GITHUB_REPOSITORY libsdl-org/SDL
-        GIT_TAG release-2.30.11
+        # GIT_TAG release-2.30.11
+        GIT_TAG 9e079fe9c7931738ed63d257b1d7fb8a07b66824
 	)
 	set_target_properties(sdl_headers_copy PROPERTIES FOLDER "SDL2")
     set_target_properties(SDL2 PROPERTIES FOLDER "SDL2")

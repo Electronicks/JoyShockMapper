@@ -19,6 +19,7 @@
 #else
 #define UCHAR unsigned char
 #include <algorithm>
+#include <unistd.h>
 #endif
 
 #pragma warning(disable : 4996) // Disable deprecated API warnings
@@ -38,6 +39,8 @@ unique_ptr<JSM::AutoConnect> autoConnectThread;
 unique_ptr<PollingThread> minimizeThread;
 bool devicesCalibrating = false;
 unordered_map<int, shared_ptr<JoyShock>> handle_to_joyshock;
+
+int input_pipe_fd[2];
 int triggerCalibrationStep = 0;
 
 struct TOUCH_POINT
@@ -1501,7 +1504,8 @@ void beforeShowTrayMenu()
 		string autoloadFolder{ AUTOLOAD_FOLDER() };
 		for (auto file : ListDirectory(autoloadFolder.c_str()))
 		{
-			string fullPathName = ".\\AutoLoad\\" + file;
+			std::filesystem::path fullPath = std::filesystem::path("AutoLoad") / file;
+			string fullPathName = fullPath.string();
 			auto noext = file.substr(0, file.find_last_of('.'));
 			tray->AddMenuItem(U("AutoLoad folder"), UnicodeString(noext.begin(), noext.end()), [fullPathName]
 			  {
@@ -1511,7 +1515,8 @@ void beforeShowTrayMenu()
 		string gyroConfigsFolder{ GYRO_CONFIGS_FOLDER() };
 		for (auto file : ListDirectory(gyroConfigsFolder.c_str()))
 		{
-			string fullPathName = ".\\GyroConfigs\\" + file;
+			std::filesystem::path fullPath = std::filesystem::path("GyroConfigs") / file;
+			string fullPathName = fullPath.string();
 			auto noext = file.substr(0, file.find_last_of('.'));
 			tray->AddMenuItem(U("GyroConfigs folder"), UnicodeString(noext.begin(), noext.end()), [fullPathName]
 			  {
@@ -2760,6 +2765,18 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPWSTR cmdLi
 #else
 int main(int argc, char *argv[])
 {
+#if !defined(_WIN32)
+	if (pipe(input_pipe_fd) == -1)
+	{
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+	if (dup2(input_pipe_fd[0], STDIN_FILENO) == -1)
+	{
+		perror("dup2");
+		exit(EXIT_FAILURE);
+	}
+#endif
 	static_cast<void>(argc);
 	static_cast<void>(argv);
 	void *trayIconData = nullptr;

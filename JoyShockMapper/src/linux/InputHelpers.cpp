@@ -9,8 +9,10 @@
 #include <thread>
 #include <vector>
 #include <memory>
+#include <iostream>
 
 #include <libevdev/libevdev-uinput.h>
+#include <fcntl.h>
 
 #include <dirent.h>
 #include <unistd.h>
@@ -568,21 +570,21 @@ void setMouseNorm(float x, float y)
 	mouse.mouse_move_absolute(std::roundf(65535.0f * x), std::roundf(65535.0f * y));
 }
 
-bool WriteToConsole(in_string command)
+bool WriteToConsole(string_view command)
 {
-	constexpr auto STDIN_FD{ 0 };
-
-	for (auto c : command)
+	ssize_t written = write(input_pipe_fd[1], command.data(), command.size());
+	if (written < 0)
 	{
-		if (::ioctl(STDIN_FD, TIOCSTI, &c) < 0)
-		{
-			perror("ioctl");
-			return false;
-		}
+		perror("write command");
+		return false;
 	}
 
-	char NEW_LINE = '\n';
-	::ioctl(STDIN_FD, TIOCSTI, &NEW_LINE);
+	ssize_t newline_written = write(input_pipe_fd[1], "\n", 1);
+	if (newline_written < 0)
+	{
+		perror("write newline");
+		return false;
+	}
 
 	return true;
 }
@@ -595,6 +597,38 @@ BOOL ConsoleCtrlHandler(DWORD)
 // just setting up the console with standard stuff
 void initConsole(std::function<void()>)
 {
+	static std::thread consoleForwardThread([](){
+		std::cout << "[DEBUG] consoleForwardThread started" << std::endl;
+		std::string line;
+		while (true)
+		{
+			if (!std::getline(std::cin, line))
+			{
+				std::cout << "[DEBUG] consoleForwardThread: EOF or error on cin" << std::endl;
+				break;
+			}
+
+			std::cout << "[DEBUG] consoleForwardThread: read line from cin: " << line << std::endl;
+
+			// Forward input to input_pipe_fd[1], mimicking WriteToConsole
+			ssize_t written = write(input_pipe_fd[1], line.data(), line.size());
+			if (written < 0)
+			{
+				perror("write command");
+				continue;
+			}
+			std::cout << "[DEBUG] consoleForwardThread: wrote line to pipe" << std::endl;
+
+			ssize_t newline_written = write(input_pipe_fd[1], "\n", 1);
+			if (newline_written < 0)
+			{
+				perror("write newline");
+				continue;
+			}
+			std::cout << "[DEBUG] consoleForwardThread: wrote newline to pipe" << std::endl;
+		}
+		std::cout << "[DEBUG] consoleForwardThread exiting" << std::endl;
+	});
 }
 
 std::tuple<std::string, std::string> GetActiveWindowName()
@@ -706,7 +740,7 @@ std::string GetCWD()
 	return pathBuffer.get();
 }
 
-bool SetCWD(in_string newCWD) {
+bool SetCWD(string_view newCWD) {
     return chdir(newCWD.data()) != 0;
 }
 
@@ -723,8 +757,30 @@ void HideConsole()
 void ShowConsole()
 {
 }
-
 void initConsole() {
+	static std::thread ttyForwardThread([](){
+		FILE* tty = fopen("/dev/tty", "r");
+		if (!tty) {
+			perror("fopen /dev/tty");
+			return;
+		}
+		char* lineptr = nullptr;
+		size_t n = 0;
+		while (true) {
+			ssize_t read = getline(&lineptr, &n, tty);
+			if (read == -1) {
+				break;
+			}
+
+			ssize_t written = write(input_pipe_fd[1], lineptr, read);
+			if (written < 0) {
+				perror("write command");
+				continue;
+			}
+		}
+		free(lineptr);
+		fclose(tty);
+	});
 }
 
 bool ClearConsole() {
