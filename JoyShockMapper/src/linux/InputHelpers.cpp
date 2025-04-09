@@ -18,6 +18,15 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
+
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+
+std::queue<Command> commandQueue;
+std::mutex commandQueueMutex;
+std::condition_variable commandQueueCV;
 #include <termios.h>
 #include <dlfcn.h>
 
@@ -572,20 +581,9 @@ void setMouseNorm(float x, float y)
 
 bool WriteToConsole(string_view command)
 {
-	ssize_t written = write(input_pipe_fd[1], command.data(), command.size());
-	if (written < 0)
-	{
-		perror("write command");
-		return false;
-	}
-
-	ssize_t newline_written = write(input_pipe_fd[1], "\n", 1);
-	if (newline_written < 0)
-	{
-		perror("write newline");
-		return false;
-	}
-
+	std::lock_guard<std::mutex> lock(commandQueueMutex);
+	commandQueue.push(Command{std::string(command), CommandSource::INTERNAL});
+	commandQueueCV.notify_one();
 	return true;
 }
 
@@ -611,21 +609,11 @@ void initConsole(std::function<void()>)
 			std::cout << "[DEBUG] consoleForwardThread: read line from cin: " << line << std::endl;
 
 			// Forward input to input_pipe_fd[1], mimicking WriteToConsole
-			ssize_t written = write(input_pipe_fd[1], line.data(), line.size());
-			if (written < 0)
 			{
-				perror("write command");
-				continue;
+				std::lock_guard<std::mutex> lock(commandQueueMutex);
+				commandQueue.push(Command{line, CommandSource::CONSOLE});
+				commandQueueCV.notify_one();
 			}
-			std::cout << "[DEBUG] consoleForwardThread: wrote line to pipe" << std::endl;
-
-			ssize_t newline_written = write(input_pipe_fd[1], "\n", 1);
-			if (newline_written < 0)
-			{
-				perror("write newline");
-				continue;
-			}
-			std::cout << "[DEBUG] consoleForwardThread: wrote newline to pipe" << std::endl;
 		}
 		std::cout << "[DEBUG] consoleForwardThread exiting" << std::endl;
 	});
@@ -772,10 +760,10 @@ void initConsole() {
 				break;
 			}
 
-			ssize_t written = write(input_pipe_fd[1], lineptr, read);
-			if (written < 0) {
-				perror("write command");
-				continue;
+			{
+				std::lock_guard<std::mutex> lock(commandQueueMutex);
+				commandQueue.push(Command{std::string(lineptr, read), CommandSource::CONSOLE});
+				commandQueueCV.notify_one();
 			}
 		}
 		free(lineptr);
@@ -795,6 +783,76 @@ void UnhideConsole() {
 
 }
 
+void initFifoCommandListener()
+{
+    // Check if FIFO exists, create if missing
+    const char* fifo_path = "/tmp/jsm_command_fifo";
+    if (access(fifo_path, F_OK) == -1) {
+        if (mkfifo(fifo_path, 0666) != 0) {
+            perror("mkfifo");
+            return;
+        }
+    }
+
+    std::thread([](){
+        const char* fifo_path = "/tmp/jsm_command_fifo";
+
+        int fifo_read_fd = open(fifo_path, O_RDONLY | O_NONBLOCK);
+        printf("[FIFO] Opened FIFO for reading (fd=%d)\n", fifo_read_fd);
+        if (fifo_read_fd < 0) {
+            perror("open fifo for reading");
+            return;
+        }
+
+        // Open dummy write FD to keep FIFO open and avoid EOF
+        int fifo_write_fd = open(fifo_path, O_WRONLY);
+        if (fifo_write_fd < 0) {
+            perror("open fifo for writing");
+            // Still proceed, but echo may block if no other writers
+        } else {
+            printf("[FIFO] Dummy writer opened (fd=%d)\n", fifo_write_fd);
+        }
+
+        FILE* fifo_file = fdopen(fifo_read_fd, "r");
+        if (!fifo_file) {
+            perror("fdopen fifo");
+            close(fifo_read_fd);
+            if (fifo_write_fd >= 0) close(fifo_write_fd);
+            return;
+        }
+
+        while (true) {
+            char* lineptr = nullptr;
+            size_t n = 0;
+            ssize_t read_len = getline(&lineptr, &n, fifo_file);
+            if (read_len == -1) {
+                free(lineptr);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                clearerr(fifo_file);
+                continue;
+            }
+
+            std::string line(lineptr, read_len);
+            free(lineptr);
+
+            // Remove trailing newline
+            if (!line.empty() && line.back() == '\n') {
+                line.pop_back();
+            }
+
+            printf("[FIFO] Received command: '%s'\n", line.c_str());
+
+            {
+                std::lock_guard<std::mutex> lock(commandQueueMutex);
+                commandQueue.push(Command{line, CommandSource::FIFO});
+                commandQueueCV.notify_one();
+            }
+        }
+
+        fclose(fifo_file);
+        if (fifo_write_fd >= 0) close(fifo_write_fd);
+    }).detach();
+}
 bool IsVisible()
 {
 	return true;

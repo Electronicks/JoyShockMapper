@@ -2795,6 +2795,7 @@ int main(int argc, char *argv[])
 	}
 	// console
 	initConsole();
+	initFifoCommandListener();
 	COUT_BOLD << "Welcome to JoyShockMapper version " << version << "!\n";
 	// if (whitelister) COUT << "JoyShockMapper was successfully whitelisted!\n";
 	//  Threads need to be created before listeners
@@ -2909,8 +2910,14 @@ int main(int argc, char *argv[])
 	string enteredCommand;
 	while (!quit)
 	{
-		getline(cin, enteredCommand);
-		commandRegistry.processLine(enteredCommand);
+		std::unique_lock<std::mutex> lock(commandQueueMutex);
+		commandQueueCV.wait(lock, []{ return !commandQueue.empty(); });
+
+		Command cmd = commandQueue.front();
+		commandQueue.pop();
+		lock.unlock();
+
+		commandRegistry.processLine(cmd.text);
 	}
 #ifdef _WIN32
 	LocalFree(argv);
