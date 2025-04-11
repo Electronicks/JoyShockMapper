@@ -840,7 +840,7 @@ void initFifoCommandListener()
                 line.pop_back();
             }
 
-            printf("[FIFO] Received command: '%s'\n", line.c_str());
+            printf("%s\n", line.c_str());
 
             {
                 std::lock_guard<std::mutex> lock(commandQueueMutex);

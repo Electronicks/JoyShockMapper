@@ -2795,7 +2795,15 @@ int main(int argc, char *argv[])
 	}
 	// console
 	initConsole();
+	#ifndef _WIN32
+	// Set up the console to receive commands from the pipe
+	// This is only needed on non-Windows platforms
+	// The pipe is created in the main function
+	// and the console is set up in initConsole()
+	// The pipe is used to receive commands from the console
+	// to the main thread
 	initFifoCommandListener();
+	#endif
 	COUT_BOLD << "Welcome to JoyShockMapper version " << version << "!\n";
 	// if (whitelister) COUT << "JoyShockMapper was successfully whitelisted!\n";
 	//  Threads need to be created before listeners
@@ -2910,14 +2918,20 @@ int main(int argc, char *argv[])
 	string enteredCommand;
 	while (!quit)
 	{
-		std::unique_lock<std::mutex> lock(commandQueueMutex);
-		commandQueueCV.wait(lock, []{ return !commandQueue.empty(); });
+		#if _WIN32
+			getline(cin, enteredCommand);
+        #else
+			std::unique_lock<std::mutex> lock(commandQueueMutex);
+			commandQueueCV.wait(lock, []{ return !commandQueue.empty(); });
 
-		Command cmd = commandQueue.front();
-		commandQueue.pop();
-		lock.unlock();
+			Command cmd = commandQueue.front();
+			commandQueue.pop();
+			lock.unlock();
+			enteredCommand = cmd.text;
+        #endif
+		
 
-		commandRegistry.processLine(cmd.text);
+		commandRegistry.processLine(enteredCommand);
 	}
 #ifdef _WIN32
 	LocalFree(argv);

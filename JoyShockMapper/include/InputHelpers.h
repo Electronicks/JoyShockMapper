@@ -10,6 +10,7 @@
 #include <vector>
 #include <atomic>
 #include <thread>
+#ifndef _WIN32
 #include <queue>
 #include <mutex>
 #include <condition_variable>
@@ -20,7 +21,7 @@ struct Command {
     std::string text;
     CommandSource source;
 };
-
+#endif
 // Setup the input pipe for console input 
 #ifndef _WIN32
 extern int input_pipe_fd[2];
@@ -61,9 +62,9 @@ BOOL WINAPI ConsoleCtrlHandler(DWORD dwCtrlType);
 // just setting up the console with standard stuff
 void initConsole();
 void initConsole(std::function<void()>);
-
+#ifndef _WIN32
 void initFifoCommandListener();
-
+#endif
 tuple<string, string> GetActiveWindowName();
 
 vector<string> ListDirectory(string directory);
