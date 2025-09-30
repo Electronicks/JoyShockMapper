@@ -56,6 +56,7 @@ bool JSMCommand::parseData(string_view arguments, string_view label)
 
 CmdRegistry::CmdRegistry()
 {
+    std::string NONAME;
 	NONAME = { 0b01001011, 0b01001111 };
 }
 
