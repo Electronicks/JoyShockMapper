@@ -113,13 +113,13 @@ struct ControllerDevice
 							{
 							case(0x02e3): // Xbox Elite Series 1
 								// Intentional fall through to the next case
-							case(0x0b05): //Xbox Elite Series 2 - Bluetooth
-								// Intentional fall through to the next case
-							case(0x0b00): //Xbox Elite Series 2
-							case (0x02ff): //XBOXGIP driver software PID - not sure what this is, might be from Valve's driver for using Elite paddles
-								// in any case, this is what my ELite Series 2 is showing as currently, so adding it here for now    
-								_ctrlr_type = JS_TYPE_XBOXONE_ELITE;
-								break;
+							case(0x0b05): // Xbox Elite Series 2 - Bluetooth
+                                                        case(0x0b00): // Xbox Elite Series 2
+                                                        case(0x02ff): // XBOXGIP driver software PID
+                                                            _ctrlr_type = JS_TYPE_XBOXONE_ELITE;
+                                                            // Add paddle detection
+                                                            _supportsPaddles = true; // New flag to indicate paddle support
+                                                            break;
 							case(0x0b12): //Xbox Series controller
 								// Intentional fall through to the next case
 							case(0x0b13): // Xbox Series controller - bluetooth
