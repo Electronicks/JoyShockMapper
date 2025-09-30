@@ -1145,7 +1145,6 @@ void joyShockPollCallback(int jcHandle, JOY_SHOCK_STATE state, JOY_SHOCK_STATE l
 void connectDevices(bool mergeJoycons = true)
 {
 	handle_to_joyshock.clear();
-	this_thread::sleep_for(100ms);
 	int numConnected = jsl->ConnectDevices();
 	vector<int> deviceHandles(numConnected, 0);
 	if (numConnected > 0)
