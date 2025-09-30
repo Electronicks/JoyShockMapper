@@ -13,6 +13,7 @@
 #include <memory>
 #include <iostream>
 #include <cstring>
+#include <span>
 
 typedef struct
 {
@@ -159,16 +160,20 @@ private:
 		rgucTriggerEffect[0] = (uint8_t)trigger_effect->mode;
 		switch (trigger_effect->mode)
 		{
-        case AdaptiveTriggerMode::RESISTANCE_RAW:
-			TriggerEffectGenerator::SimpleResistance(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->force);
-			break;
+		case AdaptiveTriggerMode::RESISTANCE_RAW:
+		{
+			uint8_t newForce = (uint8_t)trigger_effect->force / (255 / 9.);
+			uint8_t newStart = (uint8_t)trigger_effect->start / (255 / 10.);
+			TriggerEffectGenerator::Feedback(rgucTriggerEffect, 0, newStart, newForce);
+		}
+		break;
 		case AdaptiveTriggerMode::SEGMENT:
 			rgucTriggerEffect[1] = trigger_effect->start;
 			rgucTriggerEffect[2] = trigger_effect->end;
 			rgucTriggerEffect[3] = trigger_effect->force;
 			break;
 		case AdaptiveTriggerMode::RESISTANCE:
-			TriggerEffectGenerator::Resistance(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->force);
+			TriggerEffectGenerator::Feedback(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->force);
 			break;
 		case AdaptiveTriggerMode::BOW:
 			TriggerEffectGenerator::Bow(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->end, trigger_effect->force, trigger_effect->forceExtra);
@@ -177,10 +182,10 @@ private:
 			TriggerEffectGenerator::Galloping(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->end, trigger_effect->force, trigger_effect->forceExtra, trigger_effect->frequency);
 			break;
 	    case AdaptiveTriggerMode::SEMI_AUTOMATIC:
-			TriggerEffectGenerator::SemiAutomaticGun(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->end, trigger_effect->force);
+			TriggerEffectGenerator::Simple_Weapon(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->end, trigger_effect->force);
 			break;
 		case AdaptiveTriggerMode::AUTOMATIC:
-			TriggerEffectGenerator::AutomaticGun(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->force, trigger_effect->frequency);
+			TriggerEffectGenerator::Simple_Vibration(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->force, trigger_effect->frequency);
 			break;
 		case AdaptiveTriggerMode::MACHINE:
 			TriggerEffectGenerator::Machine(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->end, trigger_effect->force, trigger_effect->forceExtra, trigger_effect->frequency, trigger_effect->frequencyExtra);
@@ -717,9 +722,8 @@ public:
 			// Update active trigger effect
 			_controllerMap[deviceId]->_leftTriggerEffect = _leftTriggerEffect;
 			_controllerMap[deviceId]->_rightTriggerEffect = _rightTriggerEffect;
-
-			_controllerMap[deviceId]->SendEffect();
 		}
+		_controllerMap[deviceId]->SendEffect();
 	}
 
 	virtual void SetMicLight(int deviceId, uint8_t mode) override
