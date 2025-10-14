@@ -10,6 +10,7 @@ content
 ### Bugfixes
 
 * Fix Adaptive triggers
+* Add timestamp to virtual DS4
 
 ## 3.6.1
 

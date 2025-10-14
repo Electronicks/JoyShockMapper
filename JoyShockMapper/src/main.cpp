@@ -1110,7 +1110,7 @@ void joyShockPollCallback(int jcHandle, JOY_SHOCK_STATE state, JOY_SHOCK_STATE l
 		{
 			if (jc->hasVirtualController())
 			{
-				jc->_context->_vigemController->setGyro(imu.accelX, imu.accelY, imu.accelZ, imu.gyroX, imu.gyroY, imu.gyroZ);
+				jc->_context->_vigemController->setGyro(jc->_timeNow, imu.accelX, imu.accelY, imu.accelZ, imu.gyroX, imu.gyroY, imu.gyroZ);
 			}
 		}
 	}
