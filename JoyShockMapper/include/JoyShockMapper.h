@@ -588,4 +588,4 @@ public:
 #define DEBUG_LOG Log(Log::Level::UT)._str
 #define COUT_BOLD Log(Log::Level::BOLD)._str
 
-bool do_RECONNECT_CONTROLLERS(string_view arguments);
+bool do_RECONNECT_CONTROLLERS(string_view arguments, std::function<void()> loadOnReconnect);

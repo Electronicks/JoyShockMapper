@@ -19,6 +19,7 @@
 #else
 #define UCHAR unsigned char
 #include <algorithm>
+#include <unistd.h>
 #endif
 
 #pragma warning(disable : 4996) // Disable deprecated API warnings
@@ -38,6 +39,8 @@ unique_ptr<JSM::AutoConnect> autoConnectThread;
 unique_ptr<PollingThread> minimizeThread;
 bool devicesCalibrating = false;
 unordered_map<int, shared_ptr<JoyShock>> handle_to_joyshock;
+
+int input_pipe_fd[2];
 int triggerCalibrationStep = 0;
 
 struct TOUCH_POINT
@@ -1106,7 +1109,7 @@ void joyShockPollCallback(int jcHandle, JOY_SHOCK_STATE state, JOY_SHOCK_STATE l
 		{
 			if (jc->hasVirtualController())
 			{
-				jc->_context->_vigemController->setGyro(imu.accelX, imu.accelY, imu.accelZ, imu.gyroX, imu.gyroY, imu.gyroZ);
+				jc->_context->_vigemController->setGyro(jc->_timeNow, imu.accelX, imu.accelY, imu.accelZ, imu.gyroX, imu.gyroY, imu.gyroZ);
 			}
 		}
 	}
@@ -1273,7 +1276,7 @@ bool do_RESET_MAPPINGS(CmdRegistry *registry)
 	return true;
 }
 
-bool do_RECONNECT_CONTROLLERS(string_view arguments)
+bool do_RECONNECT_CONTROLLERS(string_view arguments, std::function<void()> loadOnReconnect)
 {
 	static bool mergeJoycons = true;
 	if (arguments.compare("MERGE") == 0)
@@ -1296,6 +1299,10 @@ bool do_RECONNECT_CONTROLLERS(string_view arguments)
 	connectDevices(mergeJoycons);
 	jsl->SetCallback(&joyShockPollCallback);
 	jsl->SetTouchCallback(&touchCallback);
+
+	if (loadOnReconnect)
+		loadOnReconnect();
+
 	return true;
 }
 
@@ -1500,7 +1507,8 @@ void beforeShowTrayMenu()
 		string autoloadFolder{ AUTOLOAD_FOLDER() };
 		for (auto file : ListDirectory(autoloadFolder.c_str()))
 		{
-			string fullPathName = ".\\AutoLoad\\" + file;
+			std::filesystem::path fullPath = std::filesystem::path("AutoLoad") / file;
+			string fullPathName = fullPath.string();
 			auto noext = file.substr(0, file.find_last_of('.'));
 			tray->AddMenuItem(U("AutoLoad folder"), UnicodeString(noext.begin(), noext.end()), [fullPathName]
 			  {
@@ -1510,7 +1518,8 @@ void beforeShowTrayMenu()
 		string gyroConfigsFolder{ GYRO_CONFIGS_FOLDER() };
 		for (auto file : ListDirectory(gyroConfigsFolder.c_str()))
 		{
-			string fullPathName = ".\\GyroConfigs\\" + file;
+			std::filesystem::path fullPath = std::filesystem::path("GyroConfigs") / file;
+			string fullPathName = fullPath.string();
 			auto noext = file.substr(0, file.find_last_of('.'));
 			tray->AddMenuItem(U("GyroConfigs folder"), UnicodeString(noext.begin(), noext.end()), [fullPathName]
 			  {
@@ -2759,6 +2768,18 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPWSTR cmdLi
 #else
 int main(int argc, char *argv[])
 {
+#if !defined(_WIN32)
+	if (pipe(input_pipe_fd) == -1)
+	{
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
+	if (dup2(input_pipe_fd[0], STDIN_FILENO) == -1)
+	{
+		perror("dup2");
+		exit(EXIT_FAILURE);
+	}
+#endif
 	static_cast<void>(argc);
 	static_cast<void>(argv);
 	void *trayIconData = nullptr;
@@ -2777,6 +2798,15 @@ int main(int argc, char *argv[])
 	}
 	// console
 	initConsole();
+	#ifndef _WIN32
+	// Set up the console to receive commands from the pipe
+	// This is only needed on non-Windows platforms
+	// The pipe is created in the main function
+	// and the console is set up in initConsole()
+	// The pipe is used to receive commands from the console
+	// to the main thread
+	initFifoCommandListener();
+	#endif
 	COUT_BOLD << "Welcome to JoyShockMapper version " << version << "!\n";
 	// if (whitelister) COUT << "JoyShockMapper was successfully whitelisted!\n";
 	//  Threads need to be created before listeners
@@ -2823,7 +2853,15 @@ int main(int argc, char *argv[])
 	// Add Macro commands
 	commandRegistry.add((new JSMMacro("RESET_MAPPINGS"))->SetMacro(bind(&do_RESET_MAPPINGS, &commandRegistry))->setHelp("Delete all custom bindings and reset to default,\nand run script OnReset.txt in JSM_DIRECTORY."));
 	commandRegistry.add((new JSMMacro("NO_GYRO_BUTTON"))->SetMacro(bind(&do_NO_GYRO_BUTTON))->setHelp("Enable gyro at all times, without any GYRO_OFF binding."));
-	commandRegistry.add((new JSMMacro("RECONNECT_CONTROLLERS"))->SetMacro(bind(&do_RECONNECT_CONTROLLERS, placeholders::_2))->setHelp("Look for newly connected controllers. Specify MERGE (default) or SPLIT whether you want to consider joycons as a single or separate controllers."));
+	commandRegistry.add((new JSMMacro("RECONNECT_CONTROLLERS"))->SetMacro(bind(&do_RECONNECT_CONTROLLERS, placeholders::_2, [&commandRegistry]()
+		{
+			if (!commandRegistry.loadConfigFile("OnReconnect.txt"))
+			{
+				COUT << "There is no ";
+				COUT_INFO << "OnReconnect.txt";
+				COUT << " file to load.\n";
+			}
+		}))->setHelp("Look for newly connected controllers. Specify MERGE (default) or SPLIT whether you want to consider joycons as a single or separate controllers."));
 	commandRegistry.add((new JSMMacro("COUNTER_OS_MOUSE_SPEED"))->SetMacro(bind(do_COUNTER_OS_MOUSE_SPEED))->setHelp("JoyShockMapper will load the user's OS mouse sensitivity value to consider it in its calculations."));
 	commandRegistry.add((new JSMMacro("IGNORE_OS_MOUSE_SPEED"))->SetMacro(bind(do_IGNORE_OS_MOUSE_SPEED))->setHelp("Disable JoyShockMapper's consideration of the the user's OS mouse sensitivity value."));
 	commandRegistry.add((new JSMMacro("CALCULATE_REAL_WORLD_CALIBRATION"))->SetMacro(bind(&do_CALCULATE_REAL_WORLD_CALIBRATION, placeholders::_2))->setHelp("Get JoyShockMapper to recommend you a REAL_WORLD_CALIBRATION value after performing the calibration sequence. Visit GyroWiki for details:\nhttp://gyrowiki.jibbsmart.com/blog:joyshockmapper-guide#calibrating"));
@@ -2891,7 +2929,19 @@ int main(int argc, char *argv[])
 	string enteredCommand;
 	while (!quit)
 	{
-		getline(cin, enteredCommand);
+		#if _WIN32
+			getline(cin, enteredCommand);
+        #else
+			std::unique_lock<std::mutex> lock(commandQueueMutex);
+			commandQueueCV.wait(lock, []{ return !commandQueue.empty(); });
+
+			Command cmd = commandQueue.front();
+			commandQueue.pop();
+			lock.unlock();
+			enteredCommand = cmd.text;
+        #endif
+		
+
 		commandRegistry.processLine(enteredCommand);
 	}
 #ifdef _WIN32

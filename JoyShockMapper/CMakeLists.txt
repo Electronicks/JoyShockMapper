@@ -84,7 +84,7 @@ if (WINDOWS)
     # ViGEmClient
     CPMAddPackage (
         NAME ViGEmClient
-        GITHUB_REPOSITORY ViGEm/ViGEmClient
+        GITHUB_REPOSITORY nefarius/ViGEmClient
         GIT_TAG 726404ef5590ea4bfcc7d9fa40cadcb2638a5b82 # updated cmakefile
         # VERSION 1.21.222.0
     )

@@ -155,16 +155,12 @@ private:
 	void LoadTriggerEffect(uint8_t *rgucTriggerEffect, const AdaptiveTriggerSetting *trigger_effect)
 	{
 		using namespace ExtendInput::DataTools::DualSense;
-		//ExtendInput::DataTools::DualSense::TriggerEffectGenerator::Bow(rgucTriggerEffect, 0, 0, 5, 3, 8);
-		//ExtendInput::DataTools::DualSense::TriggerEffectGenerator::Galloping(rgucTriggerEffect, 0, 0, 9, 3, 5, 3);
 		rgucTriggerEffect[0] = (uint8_t)trigger_effect->mode;
 		switch (trigger_effect->mode)
 		{
 		case AdaptiveTriggerMode::RESISTANCE_RAW:
 		{
-			uint8_t newForce = (uint8_t)trigger_effect->force / (255 / 9.);
-			uint8_t newStart = (uint8_t)trigger_effect->start / (255 / 10.);
-			TriggerEffectGenerator::Feedback(rgucTriggerEffect, 0, newStart, newForce);
+			TriggerEffectGenerator::Simple_Feedback(rgucTriggerEffect, 0, trigger_effect->start, trigger_effect->force);
 		}
 		break;
 		case AdaptiveTriggerMode::SEGMENT:
@@ -538,7 +534,7 @@ public:
 		if (lt != lastLT)
 		{
 			lastLT = lt;
-			DEBUG_LOG << "Left trigger is at " << lt << '\n';
+			//DEBUG_LOG << "Left trigger is at " << lt << '\n';
 		}
 		return lt;
 	}

@@ -45,7 +45,7 @@ bool TriggerEffectGenerator::Off(byte *destinationArray, int destinationIndex)
 	return true;
 }
 
-bool TriggerEffectGenerator::Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength)
+bool TriggerEffectGenerator::Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength)
 {
 	if (position > 9)
 		return false;
@@ -78,7 +78,7 @@ bool TriggerEffectGenerator::Feedback(byte *destinationArray, int destinationInd
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength)
+bool TriggerEffectGenerator::Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength)
 {
 	if (startPosition > 7 || startPosition < 2)
 		return false;
@@ -108,7 +108,7 @@ bool TriggerEffectGenerator::Weapon(byte *destinationArray, int destinationIndex
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::Vibration(byte *destinationArray, int destinationIndex, byte position, byte amplitude, byte frequency)
+bool TriggerEffectGenerator::Vibration(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t amplitude, uint16_t frequency)
 {
 	if (position > 9)
 		return false;
@@ -141,7 +141,7 @@ bool TriggerEffectGenerator::Vibration(byte *destinationArray, int destinationIn
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::MultiplePositionFeedback(byte *destinationArray, int destinationIndex, std::vector<byte> &strength)
+bool TriggerEffectGenerator::MultiplePositionFeedback(byte *destinationArray, int destinationIndex, std::vector<uint16_t> &strength)
 {
 	if (strength.size() != 10)
 		return false;
@@ -180,7 +180,7 @@ bool TriggerEffectGenerator::MultiplePositionFeedback(byte *destinationArray, in
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::SlopeFeedback(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte startStrength, byte endStrength)
+bool TriggerEffectGenerator::SlopeFeedback(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t startStrength, uint16_t endStrength)
 {
 	if (startPosition > 8 || startPosition < 0)
 		return false;
@@ -197,7 +197,7 @@ bool TriggerEffectGenerator::SlopeFeedback(byte *destinationArray, int destinati
 	if (endStrength < 1)
 		return false;
 
-	std::vector<byte> strength(10, '\0');
+	std::vector<uint16_t> strength(10, '\0');
 	float slope = 1.0f * (endStrength - startStrength) / (endPosition - startPosition);
 	for (int i = (int)startPosition; i < 10; i++)
 		if (i <= endPosition)
@@ -208,7 +208,7 @@ bool TriggerEffectGenerator::SlopeFeedback(byte *destinationArray, int destinati
 	return MultiplePositionFeedback(destinationArray, destinationIndex, strength);
 }
 
-bool TriggerEffectGenerator::MultiplePositionVibration(byte *destinationArray, int destinationIndex, byte frequency, std::vector<byte> &amplitude)
+bool TriggerEffectGenerator::MultiplePositionVibration(byte *destinationArray, int destinationIndex, uint16_t frequency, std::vector<uint16_t> &amplitude)
 {
 	if (amplitude.size() != 10)
 		return false;
@@ -246,7 +246,7 @@ bool TriggerEffectGenerator::MultiplePositionVibration(byte *destinationArray, i
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::Bow(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength, byte snapForce)
+bool TriggerEffectGenerator::Bow(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength, uint16_t snapForce)
 {
 	if (startPosition > 8)
 		return false;
@@ -279,7 +279,7 @@ bool TriggerEffectGenerator::Bow(byte *destinationArray, int destinationIndex, b
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::Galloping(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte firstFoot, byte secondFoot, byte frequency)
+bool TriggerEffectGenerator::Galloping(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t firstFoot, uint16_t secondFoot, uint16_t frequency)
 {
 	if (startPosition > 8)
 		return false;
@@ -314,7 +314,7 @@ bool TriggerEffectGenerator::Galloping(byte *destinationArray, int destinationIn
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::Machine(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte amplitudeA, byte amplitudeB, byte frequency, byte period)
+bool TriggerEffectGenerator::Machine(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t amplitudeA, uint16_t amplitudeB, uint16_t frequency, uint16_t period)
 {
 	if (startPosition > 8)
 		return false;
@@ -347,7 +347,7 @@ bool TriggerEffectGenerator::Machine(byte *destinationArray, int destinationInde
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::Simple_Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength)
+bool TriggerEffectGenerator::Simple_Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength)
 {
 	destinationArray[destinationIndex + 0] = (byte)TriggerEffectType::Simple_Feedback;
 	destinationArray[destinationIndex + 1] = position;
@@ -363,7 +363,7 @@ bool TriggerEffectGenerator::Simple_Feedback(byte *destinationArray, int destina
 	return true;
 }
 
-bool TriggerEffectGenerator::Simple_Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength)
+bool TriggerEffectGenerator::Simple_Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength)
 {
 	destinationArray[destinationIndex + 0] = (byte)TriggerEffectType::Simple_Weapon;
 	destinationArray[destinationIndex + 1] = startPosition;
@@ -379,7 +379,7 @@ bool TriggerEffectGenerator::Simple_Weapon(byte *destinationArray, int destinati
 	return true;
 }
 
-bool TriggerEffectGenerator::Simple_Vibration(byte *destinationArray, int destinationIndex, byte position, byte amplitude, byte frequency)
+bool TriggerEffectGenerator::Simple_Vibration(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t amplitude, uint16_t frequency)
 {
 	if (frequency > 0 && amplitude > 0)
 	{
@@ -399,7 +399,7 @@ bool TriggerEffectGenerator::Simple_Vibration(byte *destinationArray, int destin
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::Limited_Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength)
+bool TriggerEffectGenerator::Limited_Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength)
 {
 	if (strength > 10)
 		return false;
@@ -421,7 +421,7 @@ bool TriggerEffectGenerator::Limited_Feedback(byte *destinationArray, int destin
 	return Off(destinationArray, destinationIndex);
 }
 
-bool TriggerEffectGenerator::Limited_Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength)
+bool TriggerEffectGenerator::Limited_Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength)
 {
 	if (startPosition < 0x10)
 		return false;
@@ -476,7 +476,7 @@ bool TriggerEffectGenerator::Apple::SetModeFeedback(byte *destinationArray, int 
 	if (positionalResistiveStrengths.size() != 10)
 		return false;
 
-	std::vector<byte> force(10, '\0');
+	std::vector<uint16_t> force(10, '\0');
 	for (int i = 0; i < 10; i++)
 		force[i] = (byte)std::round(positionalResistiveStrengths[i] * 8.0f);
 
@@ -500,7 +500,7 @@ bool TriggerEffectGenerator::Apple::setModeVibration(byte *destinationArray, int
 
 	frequency = (float)std::round(frequency * 255.0f);
 
-	std::vector<byte> strength(10, '\0');
+	std::vector<uint16_t> strength(10, '\0');
 	for (int i = 0; i < 10; i++)
 		strength[i] = (byte)std::round(positionalAmplitudes[i] * 8.0f);
 
@@ -523,7 +523,7 @@ bool TriggerEffectGenerator::ReWASD::Choppy(byte *destinationArray, int destinat
 	return true;
 }
 
-bool TriggerEffectGenerator::ReWASD::Rifle(byte *destinationArray, int destinationIndex, byte frequency)
+bool TriggerEffectGenerator::ReWASD::Rifle(byte *destinationArray, int destinationIndex, uint16_t frequency)
 {
 	if (frequency < 2)
 		return false;
@@ -544,7 +544,7 @@ bool TriggerEffectGenerator::ReWASD::Rifle(byte *destinationArray, int destinati
 	return true;
 }
 
-bool TriggerEffectGenerator::ReWASD::Vibration(byte *destinationArray, int destinationIndex, byte strength, byte frequency)
+bool TriggerEffectGenerator::ReWASD::Vibration(byte *destinationArray, int destinationIndex, uint16_t strength, uint16_t frequency)
 {
 	if (strength < 1)
 		return false;

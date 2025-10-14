@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <array>
 #include <vector>
 
@@ -99,23 +100,23 @@ enum class TriggerEffectType : byte
  *               TriggerEffectType.LimitedSemiAutomaticGun is now TriggerEffectType.Limited_Weapon
  *               -----------------------------------------------------------------------------------
  *               TriggerEffectGenerator.Reset(byte *destinationArray, int destinationIndex) is now TriggerEffectGenerator.Off(byte *destinationArray, int destinationIndex)
- *               TriggerEffectGenerator.Resistance(byte *destinationArray, int destinationIndex, byte start, byte force) is now TriggerEffectGenerator.Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength)
- *               TriggerEffectGenerator.SemiAutomaticGun(byte *destinationArray, int destinationIndex, byte start, byte end, byte force) is now TriggerEffectGenerator.Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength)
- *               TriggerEffectGenerator.AutomaticGun(byte *destinationArray, int destinationIndex, byte start, byte strength, byte frequency) is now TriggerEffectGenerator.Vibration(byte *destinationArray, int destinationIndex, byte position, byte amplitude, byte frequency)
+ *               TriggerEffectGenerator.Resistance(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t force) is now TriggerEffectGenerator.Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength)
+ *               TriggerEffectGenerator.SemiAutomaticGun(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t end, uint16_t force) is now TriggerEffectGenerator.Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength)
+ *               TriggerEffectGenerator.AutomaticGun(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t strength, uint16_t frequency) is now TriggerEffectGenerator.Vibration(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t amplitude, uint16_t frequency)
  *               -----------------------------------------------------------------------------------
- *               TriggerEffectGenerator.Bow(byte *destinationArray, int destinationIndex, byte start, byte end, byte force, byte snapForce) is now TriggerEffectGenerator.
- *               TriggerEffectGenerator.Galloping(byte *destinationArray, int destinationIndex, byte start, byte end, byte firstFoot, byte secondFoot, byte frequency) is now TriggerEffectGenerator.Galloping(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte firstFoot, byte secondFoot, byte frequency)
- *               TriggerEffectGenerator.Machine(byte *destinationArray, int destinationIndex, byte start, byte end, byte strengthA, byte strengthB, byte frequency, byte period) is now TriggerEffectGenerator.Machine(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte amplitudeA, byte amplitudeB, byte frequency, byte period)
+ *               TriggerEffectGenerator.Bow(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t end, uint16_t force, uint16_t snapForce) is now TriggerEffectGenerator.
+ *               TriggerEffectGenerator.Galloping(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t end, uint16_t firstFoot, uint16_t secondFoot, uint16_t frequency) is now TriggerEffectGenerator.Galloping(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t firstFoot, uint16_t secondFoot, uint16_t frequency)
+ *               TriggerEffectGenerator.Machine(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t end, uint16_t strengthA, uint16_t strengthB, uint16_t frequency, uint16_t period) is now TriggerEffectGenerator.Machine(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t amplitudeA, uint16_t amplitudeB, uint16_t frequency, uint16_t period)
  *               -----------------------------------------------------------------------------------
- *               TriggerEffectGenerator.SimpleResistance(byte *destinationArray, int destinationIndex, byte start, byte force) is now TriggerEffectGenerator.Simple_Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength)
- *               TriggerEffectGenerator.SimpleSemiAutomaticGun(byte *destinationArray, int destinationIndex, byte start, byte end, byte force) is now TriggerEffectGenerator.Simple_Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength)
- *               TriggerEffectGenerator.SimpleAutomaticGun(byte *destinationArray, int destinationIndex, byte start, byte strength, byte frequency) is now TriggerEffectGenerator.Simple_Vibration(byte *destinationArray, int destinationIndex, byte position, byte amplitude, byte frequency)
+ *               TriggerEffectGenerator.SimpleResistance(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t force) is now TriggerEffectGenerator.Simple_Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength)
+ *               TriggerEffectGenerator.SimpleSemiAutomaticGun(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t end, uint16_t force) is now TriggerEffectGenerator.Simple_Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength)
+ *               TriggerEffectGenerator.SimpleAutomaticGun(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t strength, uint16_t frequency) is now TriggerEffectGenerator.Simple_Vibration(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t amplitude, uint16_t frequency)
  *               -----------------------------------------------------------------------------------
- *               TriggerEffectGenerator.LimitedResistance(byte *destinationArray, int destinationIndex, byte start, byte force) is now TriggerEffectGenerator.Limited_Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength)
- *               TriggerEffectGenerator.LimitedSemiAutomaticGun(byte *destinationArray, int destinationIndex, byte start, byte end, byte force) is now TriggerEffectGenerator.Limited_Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength)
+ *               TriggerEffectGenerator.LimitedResistance(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t force) is now TriggerEffectGenerator.Limited_Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength)
+ *               TriggerEffectGenerator.LimitedSemiAutomaticGun(byte *destinationArray, int destinationIndex, uint16_t start, uint16_t end, uint16_t force) is now TriggerEffectGenerator.Limited_Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength)
  *               -----------------------------------------------------------------------------------
- *               TriggerEffectGenerator.Raw.ResistanceRaw(byte *destinationArray, int destinationIndex, byte *force) is now TriggerEffectGenerator.MultiplePositionFeedback(byte *destinationArray, int destinationIndex, byte *strength)
- *               TriggerEffectGenerator.Raw.AutomaticGunRaw(byte *destinationArray, int destinationIndex, byte *strength, byte frequency) is now TriggerEffectGenerator.MultiplePositionVibration(byte *destinationArray, int destinationIndex, byte frequency, byte *amplitude)
+ *               TriggerEffectGenerator.Raw.ResistanceRaw(byte *destinationArray, int destinationIndex, uint16_t *force) is now TriggerEffectGenerator.MultiplePositionFeedback(byte *destinationArray, int destinationIndex, uint16_t *strength)
+ *               TriggerEffectGenerator.Raw.AutomaticGunRaw(byte *destinationArray, int destinationIndex, uint16_t *strength, uint16_t frequency) is now TriggerEffectGenerator.MultiplePositionVibration(byte *destinationArray, int destinationIndex, uint16_t frequency, uint16_t *amplitude)
  * Revision 6: Fixed MultiplePositionVibration not using frequency paramater.
  */
 
@@ -154,7 +155,7 @@ public:
 	/// <param name="position">The starting zone of the trigger effect. Must be between 0 and 9 inclusive.</param>
 	/// <param name="strength">The force of the resistance. Must be between 0 and 8 inclusive.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength);
+	static bool Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength);
 
 	/// <summary>
 	/// Trigger will resist movement beyond the start position until the end position.
@@ -168,7 +169,7 @@ public:
 	/// <param name="endPosition">The ending zone of the trigger effect. Must be between <paramref name="startPosition"/>+1 and 8 inclusive.</param>
 	/// <param name="strength">The force of the resistance. Must be between 0 and 8 inclusive.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength);
+	static bool Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength);
 
 	/// <summary>
 	/// Trigger will vibrate with the input amplitude and frequency beyond the start position.
@@ -181,24 +182,24 @@ public:
 	/// <param name="amplitude">Strength of the automatic cycling action. Must be between 0 and 8 inclusive.</param>
 	/// <param name="frequency">Frequency of the automatic cycling action in hertz.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Vibration(byte *destinationArray, int destinationIndex, byte position, byte amplitude, byte frequency);
+	static bool Vibration(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t amplitude, uint16_t frequency);
 
 	/// <summary>
 	/// Trigger will resist movement at varrying strengths in 10 regions.
 	/// This is an offical effect and is expected to be present in future DualSense firmware.
 	/// </summary>
-	/// <seealso cref="Feedback(byte[], int, byte, byte)"/>
+	/// <seealso cref="Feedback(byte[], int, uint16_t, uint16_t)"/>
 	/// <param name="destinationArray">The byte *that receives the data.</param>
 	/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 	/// <param name="strength">Array of 10 resistance values for zones 0 through 9. Must be between 0 and 8 inclusive.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool MultiplePositionFeedback(byte *destinationArray, int destinationIndex, std::vector<byte> &strength);
+	static bool MultiplePositionFeedback(byte *destinationArray, int destinationIndex, std::vector<uint16_t> &strength);
 
 	/// <summary>
 	/// Trigger will resist movement at a linear range of strengths.
 	/// This is an offical effect and is expected to be present in future DualSense firmware.
 	/// </summary>
-	/// <seealso cref="Feedback(byte[], int, byte, byte)"/>
+	/// <seealso cref="Feedback(byte[], int, uint16_t, uint16_t)"/>
 	/// <param name="destinationArray">The byte *that receives the data.</param>
 	/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 	/// <param name="startPosition">The starting zone of the trigger effect. Must be between 0 and 8 inclusive.</param>
@@ -206,7 +207,7 @@ public:
 	/// <param name="startStrength">The force of the resistance at the start. Must be between 1 and 8 inclusive.</param>
 	/// <param name="endStrength">The force of the resistance at the end. Must be between 1 and 8 inclusive.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool SlopeFeedback(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte startStrength, byte endStrength);
+	static bool SlopeFeedback(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t startStrength, uint16_t endStrength);
 
 	/// <summary>
 	/// Trigger will vibrate movement at varrying amplitudes and one frequency in 10 regions.
@@ -215,20 +216,20 @@ public:
 	/// <remarks>
 	/// Note this factory's results may not perform as expected.
 	/// </remarks>
-	/// <seealso cref="Vibration(byte[], int, byte, byte, byte)"/>
+	/// <seealso cref="Vibration(byte[], int, uint16_t, uint16_t, uint16_t)"/>
 	/// <param name="destinationArray">The byte *that receives the data.</param>
 	/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 	/// <param name="amplitude">Array of 10 strength values for zones 0 through 9. Must be between 0 and 8 inclusive.</param>
 	/// <param name="frequency">Frequency of the automatic cycling action in hertz.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool MultiplePositionVibration(byte *destinationArray, int destinationIndex, byte frequency, std::vector<byte> &amplitude);
+	static bool MultiplePositionVibration(byte *destinationArray, int destinationIndex, uint16_t frequency, std::vector<uint16_t> &amplitude);
 
 
 // Unofficial but Unique Effects
 
 
 	/// <summary>
-	/// The effect resembles the <see cref="Weapon(byte[], int, byte, byte, byte)">Weapon</see>
+	/// The effect resembles the <see cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)">Weapon</see>
 	/// effect, however there is a snap-back force that attempts to reset the trigger.
 	/// This is not an offical effect and may be removed in a future DualSense firmware.
 	/// </summary>
@@ -239,7 +240,7 @@ public:
 	/// <param name="strength">The force of the resistance. Must be between 0 and 8 inclusive.</param>
 	/// <param name="snapForce">The force of the snap-back. Must be between 0 and 8 inclusive.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Bow(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength, byte snapForce);
+	static bool Bow(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength, uint16_t snapForce);
 
 	/// <summary>
 	/// Trigger will oscillate in a rythmic pattern resembling galloping. Note that the
@@ -254,10 +255,10 @@ public:
 	/// <param name="secondFoot">Position of second foot in cycle. Must be between <paramref name="firstFoot"/>+1 and 7 inclusive.</param>
 	/// <param name="frequency">Frequency of the automatic cycling action in hertz.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Galloping(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte firstFoot, byte secondFoot, byte frequency);
+	static bool Galloping(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t firstFoot, uint16_t secondFoot, uint16_t frequency);
 
 	/// <summary>
-	/// This effect resembles <see cref="Vibration(byte[], int, byte, byte, byte)">Vibration</see>
+	/// This effect resembles <see cref="Vibration(byte[], int, uint16_t, uint16_t, uint16_t)">Vibration</see>
 	/// but will oscilate between two amplitudes.
 	/// This is not an offical effect and may be removed in a future DualSense firmware.
 	/// </summary>
@@ -270,7 +271,7 @@ public:
 	/// <param name="frequency">Frequency of the automatic cycling action in hertz.</param>
 	/// <param name="period">Period of the oscillation between <paramref name="amplitudeA"/> and <paramref name="amplitudeB"/> in tenths of a second.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Machine(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte amplitudeA, byte amplitudeB, byte frequency, byte period);
+	static bool Machine(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t amplitudeA, uint16_t amplitudeB, uint16_t frequency, uint16_t period);
 
 
 // Simple Effects
@@ -281,21 +282,21 @@ public:
 	/// This is not an offical effect and has an offical alternative. It may be removed in a future DualSense firmware.
 	/// </summary>
 	/// <remarks>
-	/// Use <see cref="Feedback(byte[], int, byte, byte)"/> instead.
+	/// Use <see cref="Feedback(byte[], int, uint16_t, uint16_t)"/> instead.
 	/// </remarks>
 	/// <param name="destinationArray">The byte *that receives the data.</param>
 	/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 	/// <param name="position">The starting zone of the trigger effect.</param>
 	/// <param name="strength">The force of the resistance.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Simple_Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength);
+	static bool Simple_Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength);
 
 	/// <summary>
 	/// Simplistic Weapon effect data generator.
 	/// This is not an offical effect and has an offical alternative. It may be removed in a future DualSense firmware.
 	/// </summary>
 	/// <remarks>
-	/// Use <see cref="Weapon(byte[], int, byte, byte, byte)"/> instead.
+	/// Use <see cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/> instead.
 	/// </remarks>
 	/// <param name="destinationArray">The byte *that receives the data.</param>
 	/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
@@ -303,14 +304,14 @@ public:
 	/// <param name="endPosition">The ending zone of the trigger effect.</param>
 	/// <param name="strength">The force of the resistance.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Simple_Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength);
+	static bool Simple_Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength);
 
 	/// <summary>
 	/// Simplistic Vibration effect data generator.
 	/// This is not an offical effect and has an offical alternative. It may be removed in a future DualSense firmware.
 	/// </summary>
 	/// <remarks>
-	/// Use <see cref="Vibration(byte[], int, byte, byte, byte)"/> instead.
+	/// Use <see cref="Vibration(byte[], int, uint16_t, uint16_t, uint16_t)"/> instead.
 	/// </remarks>
 	/// <param name="destinationArray">The byte *that receives the data.</param>
 	/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
@@ -318,7 +319,7 @@ public:
 	/// <param name="amplitude">Strength of the automatic cycling action.</param>
 	/// <param name="frequency">Frequency of the automatic cycling action in hertz.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Simple_Vibration(byte *destinationArray, int destinationIndex, byte position, byte amplitude, byte frequency);
+	static bool Simple_Vibration(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t amplitude, uint16_t frequency);
 
 
 // Limited Effects
@@ -329,21 +330,21 @@ public:
 	/// This is not an offical effect and has an offical alternative. It may be removed in a future DualSense firmware.
 	/// </summary>
 	/// <remarks>
-	/// Use <see cref="Feedback(byte[], int, byte, byte)"/> instead.
+	/// Use <see cref="Feedback(byte[], int, uint16_t, uint16_t)"/> instead.
 	/// </remarks>
 	/// <param name="destinationArray">The byte *that receives the data.</param>
 	/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 	/// <param name="position">The starting zone of the trigger effect.</param>
 	/// <param name="strength">The force of the resistance. Must be between 0 and 10 inclusive.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Limited_Feedback(byte *destinationArray, int destinationIndex, byte position, byte strength);
+	static bool Limited_Feedback(byte *destinationArray, int destinationIndex, uint16_t position, uint16_t strength);
 
 	/// <summary>
 	/// Simplistic Weapon effect data generator with stricter paramater limits.
 	/// This is not an offical effect and has an offical alternative. It may be removed in a future DualSense firmware.
 	/// </summary>
 	/// <remarks>
-	/// Use <see cref="Weapon(byte[], int, byte, byte, byte)"/> instead.
+	/// Use <see cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/> instead.
 	/// </remarks>
 	/// <param name="destinationArray">The byte *that receives the data.</param>
 	/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
@@ -351,7 +352,7 @@ public:
 	/// <param name="endPosition">The ending zone of the trigger effect. Must be between <paramref name="startPosition"/> and <paramref name="startPosition"/>+100 inclusive.</param>
 	/// <param name="strength">The force of the resistance. Must be between 0 and 10 inclusive.</param>
 	/// <returns>The success of the effect write.</returns>
-	static bool Limited_Weapon(byte *destinationArray, int destinationIndex, byte startPosition, byte endPosition, byte strength);
+	static bool Limited_Weapon(byte *destinationArray, int destinationIndex, uint16_t startPosition, uint16_t endPosition, uint16_t strength);
 
 	/// <summary>
 	/// Interface adapaters patterned after Apple's GCDualSenseAdaptiveTrigger classs.
@@ -382,7 +383,7 @@ public:
 		/// <remarks>
 		/// Documentation ported from Apple's API Docs.
 		/// </remarks>
-		/// <seealso cref="Feedback(byte[], int, byte, byte)"/>
+		/// <seealso cref="Feedback(byte[], int, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <param name="startPosition">A normalized float from [0-1], with 0 representing the smallest possible trigger depression and 1 representing the maximum trigger depression.</param>
@@ -398,7 +399,7 @@ public:
 		/// <remarks>
 		/// Documentation ported from Apple's API Docs.
 		/// </remarks>
-		/// <seealso cref="Weapon(byte[], int, byte, byte, byte)"/>
+		/// <seealso cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <param name="startPosition">A normalized float from [0-1], with 0 representing the smallest possible depression and 1 representing the maximum trigger depression. The effect will begin once the trigger is depressed beyond this point.</param>
@@ -414,7 +415,7 @@ public:
 		/// <remarks>
 		/// Documentation ported from Apple's API Docs.
 		/// </remarks>
-		/// <seealso cref="Vibration(byte[], int, byte, byte, byte)"/>
+		/// <seealso cref="Vibration(byte[], int, uint16_t, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <param name="startPosition">A normalized float from [0-1], with 0 representing the smallest possible depression and 1 representing the maximum trigger depression. The effect will begin once the trigger is depressed beyond this point.</param>
@@ -430,7 +431,7 @@ public:
 		/// <remarks>
 		/// Documentation ported from Apple's API Docs.
 		/// </remarks>
-		/// <seealso cref="MultiplePositionFeedback(byte[], int, byte[])"/>
+		/// <seealso cref="MultiplePositionFeedback(byte[], int, uint16_t[])"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <param name="positionalResistiveStrengths">An array of 10 normalized floats from [0-1], with 0 representing the minimum effect strength (off entirely) and 1 representing the maximum effect strength.</param>
@@ -444,7 +445,7 @@ public:
 		/// <remarks>
 		/// Documentation ported from Apple's API Docs.
 		/// </remarks>
-		/// <seealso cref="MultiplePositionFeedback(byte[], int, byte)"/>
+		/// <seealso cref="MultiplePositionFeedback(byte[], int, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <param name="startPosition">A normalized float from [0-1], with 0 representing the smallest possible depression and 1 representing the maximum trigger depression. The effect will begin once the trigger is depressed beyond this point.</param>
@@ -461,7 +462,7 @@ public:
 		/// <remarks>
 		/// Documentation ported from Apple's API Docs.
 		/// </remarks>
-		/// <seealso cref="MultiplePositionVibration(byte[], int, byte, byte[])"/>
+		/// <seealso cref="MultiplePositionVibration(byte[], int, uint16_t, uint16_t[])"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <param name="positionalAmplitudes">An array of 10 normalized floats from [0-1], with 0 representing the minimum effect strength (off entirely) and 1 representing the maximum effect strength.</param>
@@ -485,8 +486,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Weapon with a start value of 0x90, end value of 0xa0, and a force of 0xff.
 		/// </remarks>
-		/// <seealso cref="Simple_Weapon(byte[], int, byte, byte, byte)"/>
-		/// <seealso cref="Weapon(byte[], int, byte, byte, byte)"/>
+		/// <seealso cref="Simple_Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
+		/// <seealso cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -501,8 +502,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Weapon with a start value of 0x70, end value of 0xa0, and a force of 0xff.
 		/// </remarks>
-		/// <seealso cref="Simple_Weapon(byte[], int, byte, byte, byte)"/>
-		/// <seealso cref="Weapon(byte[], int, byte, byte, byte)"/>
+		/// <seealso cref="Simple_Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
+		/// <seealso cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -517,8 +518,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Weapon with a start value of 0x45, end value of 0xa0, and a force of 0xff.
 		/// </remarks>
-		/// <seealso cref="Simple_Weapon(byte[], int, byte, byte, byte)"/>
-		/// <seealso cref="Weapon(byte[], int, byte, byte, byte)"/>
+		/// <seealso cref="Simple_Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
+		/// <seealso cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -533,8 +534,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Weapon with a start value of 0x20, end value of 0xa0, and a force of 0xff.
 		/// </remarks>
-		/// <seealso cref="Simple_Weapon(byte[], int, byte, byte, byte)"/>
-		/// <seealso cref="Weapon(byte[], int, byte, byte, byte)"/>
+		/// <seealso cref="Simple_Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
+		/// <seealso cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -549,8 +550,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Weapon with a start value of 0x00, end value of 0x00, and a force of 0x00.
 		/// </remarks>
-		/// <seealso cref="Simple_Weapon(byte[], int, byte, byte, byte)"/>
-		/// <seealso cref="Weapon(byte[], int, byte, byte, byte)"/>
+		/// <seealso cref="Simple_Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
+		/// <seealso cref="Weapon(byte[], int, uint16_t, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -565,7 +566,7 @@ public:
 		/// <remarks>
 		/// Abuses Feedback effect to set a resistance in 3 of 10 trigger regions.
 		/// </remarks>
-		/// <seealso cref="Feedback(byte[], int, byte, byte)"/>
+		/// <seealso cref="Feedback(byte[], int, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -577,8 +578,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Feedback with a start value of 0x00 and a force of 0x00.
 		/// </remarks>
-		/// <seealso cref="Simple_Feedback(byte[], int, byte, byte)"/>
-		/// <seealso cref="Feedback(byte[], int, byte, byte)"/>
+		/// <seealso cref="Simple_Feedback(byte[], int, uint16_t, uint16_t)"/>
+		/// <seealso cref="Feedback(byte[], int, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -593,8 +594,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Feedback with a start value of 0x00 and a force of 0x64.
 		/// </remarks>
-		/// <seealso cref="Simple_Feedback(byte[], int, byte, byte)"/>
-		/// <seealso cref="Feedback(byte[], int, byte, byte)"/>
+		/// <seealso cref="Simple_Feedback(byte[], int, uint16_t, uint16_t)"/>
+		/// <seealso cref="Feedback(byte[], int, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -609,8 +610,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Feedback with a start value of 0x00 and a force of 0xdc.
 		/// </remarks>
-		/// <seealso cref="Simple_Feedback(byte[], int, byte, byte)"/>
-		/// <seealso cref="Feedback(byte[], int, byte, byte)"/>
+		/// <seealso cref="Simple_Feedback(byte[], int, uint16_t, uint16_t)"/>
+		/// <seealso cref="Feedback(byte[], int, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -625,8 +626,8 @@ public:
 		/// <remarks>
 		/// Uses Simple_Feedback with a start value of 0x55 and a force of 0x64.
 		/// </remarks>
-		/// <seealso cref="Simple_Feedback(byte[], int, byte, byte)"/>
-		/// <seealso cref="Feedback(byte[], int, byte, byte)"/>
+		/// <seealso cref="Simple_Feedback(byte[], int, uint16_t, uint16_t)"/>
+		/// <seealso cref="Feedback(byte[], int, uint16_t, uint16_t)"/>
 		/// <param name="destinationArray">The byte *that receives the data.</param>
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <returns>The success of the effect write.</returns>
@@ -643,7 +644,7 @@ public:
 		/// <param name="destinationIndex">A 32-bit integer that represents the index in the destinationArray at which storing begins.</param>
 		/// <param name="frequency">Frequency of the automatic cycling action in hertz. Must be between 2 and 20 inclusive.</param>
 		/// <returns>The success of the effect write.</returns>
-		static bool Rifle(byte *destinationArray, int destinationIndex, byte frequency = 10);
+		static bool Rifle(byte *destinationArray, int destinationIndex, uint16_t frequency = 10);
 
 		/// <summary>
 		/// Vibration vibration effect with incorrect strength handling.
@@ -654,7 +655,7 @@ public:
 		/// <param name="strength">Strength of the automatic cycling action. Must be between 1 and 255 inclusive. This is two 3 bit numbers with the remaining 2 high bits unused. Yes, reWASD uses this value incorrectly.</param>
 		/// <param name="frequency">Frequency of the automatic cycling action in hertz. Must be between 1 and 255 inclusive.</param>
 		/// <returns>The success of the effect write.</returns>
-		static bool Vibration(byte *destinationArray, int destinationIndex, byte strength = 220, byte frequency = 30);
+		static bool Vibration(byte *destinationArray, int destinationIndex, uint16_t strength = 220, uint16_t frequency = 30);
 	};
 };
 } // namespace ExtendInput.DataTools. DualSense
