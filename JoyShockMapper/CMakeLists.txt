@@ -175,7 +175,7 @@ if(SDL OR NOT DEFINED SDL)
 	CPMAddPackage (
 		NAME SDL3
         GITHUB_REPOSITORY libsdl-org/SDL
-        GIT_TAG release-3.2.0
+        GIT_TAG release-3.2.x
 	)
 	set_target_properties(SDL_uclibc PROPERTIES FOLDER "SDL")
     set_target_properties(SDL3-shared PROPERTIES FOLDER "SDL")

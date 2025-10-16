@@ -528,15 +528,7 @@ public:
 
 	float GetLeftTrigger(int deviceId) override
 	{
-		static float lastLT = 0.f;
-		auto lt = (SDL_GetGamepadAxis(_controllerMap[deviceId]->_sdlController, SDL_GAMEPAD_AXIS_LEFT_TRIGGER)) / (float)(SDL_JOYSTICK_AXIS_MAX);
-		
-		if (lt != lastLT)
-		{
-			lastLT = lt;
-			//DEBUG_LOG << "Left trigger is at " << lt << '\n';
-		}
-		return lt;
+		return (SDL_GetGamepadAxis(_controllerMap[deviceId]->_sdlController, SDL_GAMEPAD_AXIS_LEFT_TRIGGER)) / (float)(SDL_JOYSTICK_AXIS_MAX);
 	}
 
 	float GetRightTrigger(int deviceId) override
