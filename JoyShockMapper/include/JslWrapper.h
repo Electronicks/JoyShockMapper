@@ -23,12 +23,12 @@ struct AdaptiveTriggerSetting
 {
 	AdaptiveTriggerMode mode = AdaptiveTriggerMode::ON;
 	// Keep these 6 fields next to each other and the same type
-	uint8_t start = 0;     
-    uint8_t end = 0;       
-    uint8_t force = 0;
-    uint8_t frequency = 0; 
-	uint8_t forceExtra = 0; 
-	uint8_t frequencyExtra = 0; 
+	uint16_t start = 0;
+	uint16_t end = 0;
+	uint16_t force = 0;
+	uint16_t frequency = 0;
+	uint16_t forceExtra = 0;
+	uint16_t frequencyExtra = 0;
 };
 
 // Defined in operators.cpp

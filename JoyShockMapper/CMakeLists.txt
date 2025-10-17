@@ -90,9 +90,9 @@ if (WINDOWS)
     # ViGEmClient
     CPMAddPackage (
         NAME ViGEmClient
-        GITHUB_REPOSITORY ViGEm/ViGEmClient
-		GIT_TAG 726404ef5590ea4bfcc7d9fa40cadcb2638a5b82 # updated cmakefile
-		# VERSION 1.21.222.0
+        GITHUB_REPOSITORY nefarius/ViGEmClient
+        GIT_TAG 726404ef5590ea4bfcc7d9fa40cadcb2638a5b82 # updated cmakefile
+        # VERSION 1.21.222.0
     )
     
     add_dependencies(${BINARY_NAME} ViGEmClient)
@@ -181,7 +181,7 @@ if(SDL OR NOT DEFINED SDL)
 	CPMAddPackage (
 		NAME SDL3
         GITHUB_REPOSITORY libsdl-org/SDL
-        GIT_TAG release-3.2.0
+        GIT_TAG release-3.2.x
 	)
 
     # CPMAddPackage (
