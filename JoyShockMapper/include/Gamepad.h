@@ -14,6 +14,7 @@ class Gamepad
 
 public:
 	typedef function<void(uint8_t largeMotor, uint8_t smallMotor, Indicator indicator)> Callback;
+	using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
 
 protected:
 	Gamepad();
@@ -39,7 +40,7 @@ public:
 	virtual void setStick(float x, float y, bool isLeft) = 0;
 	virtual void setLeftTrigger(float) = 0;
 	virtual void setRightTrigger(float) = 0;
-	virtual void setGyro(float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ) = 0;
+	virtual void setGyro(TimePoint now, float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ) = 0;
 	virtual void setTouchState(optional<FloatXY> press1, optional<FloatXY> press2) = 0;
 	virtual void update() = 0;
 

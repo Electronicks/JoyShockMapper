@@ -75,6 +75,11 @@
         DESTINATION ${PACKAGE_DIR}
     )
 
+	install (
+        FILES ${PROJECT_SOURCE_DIR}/dist/OnReconnect.txt
+        DESTINATION ${PACKAGE_DIR}
+    )
+
     install (
         FILES ${PROJECT_SOURCE_DIR}/CHANGELOG.md
         DESTINATION ${PACKAGE_DIR}

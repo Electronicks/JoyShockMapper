@@ -255,7 +255,7 @@ public:
 		isLeft ? setLeftStick(x, y) : setRightStick(x, y);
 	}
 
-	void setGyro(float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ) override
+	void setGyro(TimePoint now, float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ) override
 	{}
 
 	void setTouchState(optional<FloatXY> press1, optional<FloatXY> press2) override 
@@ -418,9 +418,10 @@ class Ds4Gamepad : public VigemGamepad
 {
 public:
 	Ds4Gamepad(Callback notification)
-	    : VigemGamepad(notification)
-	    , _stateDS4()
+		: VigemGamepad(notification)
+		, _stateDS4()
 		, _pollDs4Thread(bind(&Ds4Gamepad::pollDs4, this))
+		, _firstTimeStamp(nullopt)
 	{
 		DS4_REPORT_EX_INIT(&_stateDS4);
 
@@ -511,9 +512,29 @@ public:
 		else
 			ClearPressed(_stateDS4.Report.wButtons, DS4_BUTTON_TRIGGER_RIGHT);
 	}
-	virtual void setGyro(float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ) override
+	virtual void setGyro(TimePoint now,float accelX, float accelY, float accelZ, float gyroX, float gyroY, float gyroZ) override
 	{
 		// reset Analog Data ?
+		if (_firstTimeStamp)
+		{
+			// Sensor timestamp is in 5.33us units
+			static constexpr double SENSOR_UNIT = 5.33;
+			static constexpr long long MAX_STAMP_US = SENSOR_UNIT * numeric_limits<decltype(_stateDS4.Report.wTimestamp)>().max();
+
+			auto diff_us = chrono::duration_cast<chrono::microseconds>(now - *_firstTimeStamp).count();
+			if (diff_us > MAX_STAMP_US)
+			{
+				*_firstTimeStamp += std::chrono::microseconds(MAX_STAMP_US);
+				diff_us -= MAX_STAMP_US;
+			}
+			_stateDS4.Report.wTimestamp = static_cast<decltype(_stateDS4.Report.wTimestamp)>(diff_us / SENSOR_UNIT);
+		}
+		else
+		{
+			_firstTimeStamp = now;
+			_stateDS4.Report.wTimestamp = 0;
+		}
+
 		static constexpr float accelToRaw = 8192.0f;
 		_stateDS4.Report.wAccelX = SHORT(roundf(accelX * accelToRaw));
 		_stateDS4.Report.wAccelY = SHORT(roundf(accelY * accelToRaw));
@@ -599,6 +620,7 @@ public:
 
 private:
 	DS4_REPORT_EX _stateDS4;
+	optional<TimePoint> _firstTimeStamp;
 	uint8_t _touchPacket = 0;
 	uint8_t _nextTouchId = 1;
 	optional<uint8_t> _touchId1 = 0;

@@ -1,0 +1,6 @@
+# Edit this file to operations on reconnect
+
+# Uncomment the following three lines to calibrate all your devices at connection with AUTOCONNECT
+#RESTART_GYRO_CALIBRATION
+#SLEEP 2                       # wait two seconds
+#FINISH_GYRO_CALIBRATION

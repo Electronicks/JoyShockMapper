@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
 // https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 // Only use undefined keys from the above list for JSM custom commands

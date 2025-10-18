@@ -3,6 +3,24 @@
 Most recent updates will appear first.
 This is a summary of new features and bugfixes. Read the README to learn how to use the features mentioned here.
 
+## 3.6.2
+
+content
+
+### Features
+
+Upgrade to SDL3
+Run Script file OnReconnect.txt
+Update trigger effect code. Maybe more effects in the future.
+
+### Bugfixes
+
+* Fix Adaptive triggers not working
+* Add timestamp to virtual DS4
+* FIFO command listener for linux
+* Improved diagonal handling in edge cases
+
+
 ## 3.6.1
 
 Fixing all the stuff I broke.
