@@ -1065,8 +1065,8 @@ void JoyShock::processStick(float stickX, float stickY, Stick &stick, float mous
 	auto ringMode = getSetting<RingMode>(stick._ringMode);
 	auto stickMode = getSetting<StickMode>(stick._stickMode);
 
-	bool ring = ringMode == RingMode::INNER && stickLength > 0.0f && stickLength < 0.7f ||
-	  ringMode == RingMode::OUTER && stickLength > 0.7f;
+	bool ring = ringMode == RingMode::INNER && stickLength > 0.0f && stickLength < 1.0f ||
+				ringMode == RingMode::OUTER && stickLength >=  1.0f;
 	handleButtonChange(stick._ringId, ring, stick._touchpadIndex);
 
 	if (stick.ignore_stick_mode && stickMode == StickMode::INVALID && stickX == 0 && stickY == 0)

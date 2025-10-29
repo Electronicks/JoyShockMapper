@@ -3,9 +3,10 @@
 Most recent updates will appear first.
 This is a summary of new features and bugfixes. Read the README to learn how to use the features mentioned here.
 
-## 3.6.2
+## 3.7.0
 
 content
+Updated inner/outer ring behaviour: outer ring mapping activates on full stick tilt, otherwise inner ring mapping activates. The outer ring is adjustable with the ```*_STICK_DEADZONE_OUTER``` setting.
 
 ### Features
 
