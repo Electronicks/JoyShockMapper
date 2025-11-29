@@ -142,6 +142,7 @@ void touchCallback(int jcHandle, TOUCH_STATE newState, TOUCH_STATE prevState, fl
 		int index0 = -1, index1 = -1;
 		if (point0.isDown())
 		{
+			point0.posY += 1e-6f;
 			float row = ceilf(point0.posY * grid_size.value().y()) - 1.f;
 			float col = ceilf(point0.posX * grid_size.value().x()) - 1.f;
 			// COUT << "I should be in button " << row << " " << col << '\n';
