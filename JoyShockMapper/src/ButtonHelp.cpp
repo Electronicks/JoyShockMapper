@@ -1,6 +1,4 @@
-﻿#pragma once
-
-#include <JoyShockMapper.h>
+﻿#include <JoyShockMapper.h>
 
 const map<ButtonID, string> buttonHelpMap{
 	{ ButtonID::UP, "Up on the d-pad" },

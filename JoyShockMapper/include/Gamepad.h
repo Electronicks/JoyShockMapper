@@ -3,6 +3,8 @@
 #include "JoyShockMapper.h"
 #include "PlatformDefinitions.h"
 
+#include <chrono>
+
 struct Indicator
 {
 	uint8_t led;

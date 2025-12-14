@@ -23,6 +23,8 @@
  */
 
 #include "TriggerEffectGenerator.h"
+
+#include <algorithm>
 #include <cstdint>
 #include <cmath>
 
