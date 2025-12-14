@@ -11,7 +11,8 @@ TrayIcon *TrayIcon::getNew(TrayIconData applicationName, std::function<void()> &
 
 
 StatusNotifierItem::StatusNotifierItem(TrayIconData, std::function<void()> &&beforeShow)
-  : thread_{ [this, &beforeShow] {
+  : beforeShow_{std::move(beforeShow)},
+    thread_{ [this] {
 	  int argc = 0;
 	  gtk_init(&argc, nullptr);
 
@@ -34,7 +35,9 @@ StatusNotifierItem::StatusNotifierItem(TrayIconData, std::function<void()> &&bef
 	  app_indicator_set_status(indicator_, APP_INDICATOR_STATUS_ACTIVE);
 	  app_indicator_set_menu(indicator_, menu_.get());
 
-	  beforeShow();
+	  if (beforeShow_) {
+		  beforeShow_();
+	  }
 
 	  gtk_main();
   } }

@@ -52,4 +52,5 @@ private:
 	std::list<ClickCallbackType> callbacks_;
 
 	std::thread thread_;
+	std::function<void()> beforeShow_;
 };
